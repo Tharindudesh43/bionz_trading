@@ -50,7 +50,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-     "type": "module",
+    "type": "module",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
