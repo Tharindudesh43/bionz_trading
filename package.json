@@ -2,11 +2,12 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -32,16 +33,15 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
     "dotenv": "^17.2.3",
-    "env": "^0.0.2",
     "firebase": "^12.6.0",
     "firebase-admin": "^13.6.0",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.554.0",
     "next": "16.0.3",
-    "react": "19.2.0",
+    "react": "^18.2.0",
     "react-apexcharts": "^1.9.0",
     "react-chartjs-2": "^5.3.1",
-    "react-dom": "19.2.0",
+    "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
@@ -52,8 +52,8 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "tailwindcss": "^4",
