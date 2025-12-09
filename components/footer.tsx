@@ -1,106 +1,97 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Image from "next/image";
+import SocialImage from "@/assets/social-media.png";
 
-const LINKS = [
-  {
-    title: "Company",
-    items: [
-      { title: "About Us", href: "#" },
-      { title: "Careers", href: "#" },
-      { title: "Premium Tools", href: "#" },
-      { title: "Blogs", href: "#" },
-    ],
-  },
-  {
-    title: "Pages",
-    items: [
-      { title: "Login", href: "#" },
-      { title: "Register", href: "#" },
-      { title: "Add List", href: "#" },
-      { title: "Contact", href: "#" },
-    ],
-  },
-  {
-    title: "Legal",
-    items: [
-      { title: "Terms", href: "#" },
-      { title: "Privacy", href: "#" },
-      { title: "Teams", href: "#" },
-      { title: "About Us", href: "#" },
-    ],
-  },
-];
-
-const YEAR = new Date().getFullYear();
-
-export const title = "Newsletter Footer";
-
-export default function FooterNewsletter01() {
+const MobileAppImageExtraSmall = () => (
+  <div className="relative mx-auto w-full max-w-[12rem] sm:max-w-xs lg:max-w-sm">
+    <div className="aspect-square bg-neutral-900 rounded-full flex items-center justify-center p-4 shadow-lg shadow-purple-900/30">
+      <Image
+        src={SocialImage}
+        alt="Mobile App"
+        className="w-full h-auto rounded-lg" // Reduced border radius
+        priority
+      />
+    </div>
+  </div>
+);
+export default function FooterCompact() {
   return (
-    <footer className="w-full border-t pb-8 pt-16 bg-accent">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 justify-between gap-10 md:grid-cols-2">
-          <div className="grid grid-cols-3 justify-between gap-x-6 gap-y-4">
-            {LINKS.map(({ title, items }) => (
-              <ul key={title}>
-                <p className="mb-2 font-semibold">{title}</p>
-                {items.map(({ title, href }) => (
-                  <li key={title} className="mb-1">
-                    <a
-                      href={href}
-                      className="text-foreground hover:text-primary text-sm transition-colors"
-                    >
-                      {title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ))}
+    // Reduced vertical padding from py-16 to py-10
+    <footer className="w-full bg-black text-white border-t border-gray-800">
+      <section className="container mx-auto px-4 md:px-8 xl:px-20 py-10">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+          {/* Left Mobile Image */}
+          <div className="w-full lg:w-1/2 flex justify-center lg:justify-start order-2 lg:order-1">
+            <MobileAppImageExtraSmall />
           </div>
-          <div className="lg:ml-auto">
-            <p className="mb-2 font-semibold">Subscribe</p>
-            <p className="text-foreground max-w-sm text-sm [text-wrap:_balance]">
-              Get access to subscriber exclusive deals and be the first who gets
-              informed about fresh sales.
+          {/* Right Feature Content */}
+          <div className="w-full lg:w-1/2 order-1 lg:order-2">
+            {/* Reduced heading size */}
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">
+              Bionz Trading
+            </h2>
+            {/* Reduced paragraph size */}
+            <p className="text-gray-300 mb-4 text-sm sm:text-base leading-relaxed">
+              Bionz Signal App helps you trade smarter with accurate crypto
+              signals, real-time news, tips videos, a profit
+              calculator, and a personalized trading plan based on your
+              starting capital.
             </p>
-            <div className="mt-4 flex w-full max-w-sm items-end gap-2">
-              <div className="w-full">
-                <Label
-                  htmlFor="email"
-                  className="mb-2 inline-block text-sm font-semibold"
+
+            {/* Feature List */}
+            <ul className="text-sm sm:text-base space-y-2 list-none">
+              {[
+                "Real Time News",
+                "Spot And Future Trading Signals",
+                "Profit/Loss Calculator",
+                "Trading Plan For You",
+                "Manage Your Loss And Profit",
+              ].map((item, index) => (
+                <li
+                  key={index}
+                  // Adjusted list item padding slightly
+                  className="relative pl-4 before:content-['•'] before:absolute before:left-0 before:text-green-400"
                 >
-                  Your Email
-                </Label>
-                <Input
-                  type="email"
-                  id="email"
-                  placeholder="someone@example.com"
-                />
-              </div>
-              <Button className="shrink-0">Subscribe</Button>
-            </div>
-            <div className="mt-3 flex items-center gap-2">
-              <Checkbox id="checkbox-link" />
-              <Label
-                htmlFor="checkbox-link"
-                className="text-foreground flex gap-1 select-none text-sm"
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            {/* Download Buttons */}
+            <div className="flex space-x-3 sm:space-x-4 mt-6">
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-transform hover:scale-105"
               >
-                I agree with the
-                <a href="#" className="text-primary hover:underline">
-                  terms and conditions
-                </a>
-              </Label>
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                  alt="Get it on Google Play"
+                  width={150} // Slightly smaller base width
+                  height={50} // Slightly smaller base height
+                  className="h-8 sm:h-10 w-auto" // Reduced height class
+                />
+              </a>
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-transform hover:scale-105"
+              >
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                  alt="Download on the App Store"
+                  width={150} // Slightly smaller base width
+                  height={50} // Slightly smaller base height
+                  className="h-8 sm:h-10 w-auto" // Reduced height class
+                />
+              </a>
             </div>
           </div>
         </div>
-        <p className="text-foreground mt-10 text-center text-sm">
-          &copy; {YEAR} shadcn.io. All Rights Reserved.
-        </p>
-      </div>
+      </section>
     </footer>
   );
 }

@@ -52,25 +52,8 @@ const [loading, setLoading] = useState(true);
   return (
 <>
  <div className="flex flex-col items-center py-12 px-4  dark:bg-gray-900 min-h-fit">
-      <div className="w-full max-w-5xl">
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Login Section */}
-
-        </div>
+      <div className="w-full max-w-5xl mt-10">
         <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
-          {/* Login Section */}
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Top Coins</h2>
-           
-            <div className="space-y-4">
-              <div className="flex items-center justify-center">
-                <span className="text-gray-700 dark:text-gray-300 items-center justify-center">Empty</span> 
-              </div>
-            </div>
-          </div>
-
-          {/* Register Section */}
-          {/* Register Section (Updated) */}
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md space-y-6">
            <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Latest News</h1>

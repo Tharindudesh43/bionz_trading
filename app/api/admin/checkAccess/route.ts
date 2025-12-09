@@ -4,15 +4,24 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const { session } = await req.json();
-    const decoded = await admin.auth().verifySessionCookie(session);
-    const role =  decoded.role;
 
-    if (role === 'admin') {
+    if (!session) {
+      return NextResponse.json({ admin: false }, { status: 401 });
+    }
+
+    // Verify Firebase session cookie
+    const decoded = await admin.auth().verifySessionCookie(session, true);
+
+    // Check user role
+    const role = decoded.role || null;
+
+    if (role === "admin") {
       return NextResponse.json({ admin: true });
-    }else {
+    } else {
       return NextResponse.json({ admin: false });
     }
-  } catch (e) {
-    return NextResponse.json({ admin: false });
+  } catch (error) {
+    console.error("Error verifying session:", error);
+    return NextResponse.json({ admin: false }, { status: 401 });
   }
 }

@@ -141,13 +141,21 @@ const defaultNavigationLinks: Navbar02NavItem[] = [
   },
   {
   label: 'Signals',
-  submenu: true,
+  submenu: false,
   type: 'icon',
-  items: [
-    { href: '/spot', label: 'Spot', icon: 'CurrencyDollarIcon' },       // For trading spot
-    { href: '/futures', label: 'Futures', icon: 'TrendingUpIcon' },    // For futures trading
-  ],
-},
+  href: '/signals',
+  },
+   {
+  label: 'Admin',
+  submenu: false,
+  type: 'icon',
+  href: '/admin',
+  }, {
+  label: 'MarketCap',
+  submenu: false,
+  type: 'icon',
+  href: '/marketcap',
+  },
 {
   label: 'Tips',
   submenu: false,
@@ -235,7 +243,7 @@ async function signOutUser(e: React.MouseEvent<HTMLButtonElement>) {
     dispatch(clearUser());
 
     // Redirect if you want
-    router.push("/");
+    // router.push("/");
   } catch (err) {
     console.error("Sign out failed:", err);
   }

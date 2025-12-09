@@ -5,7 +5,6 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-    // Firebase Auth REST API (email/password login)
     const loginRes = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.FIREBASE_API_KEY}`,
       {
@@ -42,11 +41,11 @@ export async function POST(req: Request) {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
   
     let role: string | null = null;
+
     if (decodedToken.role=="admin") {
       role = "admin";
       console.log("Admin login detected, skipping Firestore check.");
     } else {
-      // Normal user → check Firestore
       const userRef = adminDB.collection("users").doc(uid);
       const userSnap = await userRef.get();
 

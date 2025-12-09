@@ -1,0 +1,53 @@
+import { NextResponse } from "next/server";
+import { adminDB } from "@/firebase/FirebaseAdmin";
+
+export async function PATCH(req: Request) {
+  try {
+    const { data } = await req.json();
+
+    if (!data || !data.signal_id) {
+      return NextResponse.json(
+        { success: false, message: "signal_id is required" },
+        { status: 400 }
+      );
+    }
+
+    const signalId = data.signal_id;
+
+    console.log("Received data for update:", data);
+
+    const querySnapshot = await adminDB
+      .collection("signals")
+      .where("signal_id", "==", signalId)
+      .get();
+      
+    if (querySnapshot.empty) {
+      return NextResponse.json(
+        { success: false, message: "Signal not found" },
+        { status: 404 }
+      );
+    }
+
+    // Get the doc reference
+    const docRef = querySnapshot.docs[0].ref;
+
+    // 2️⃣ Update the document
+    await docRef.update({
+      ...data,
+      updated_at: new Date().toISOString(),
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Signal updated successfully",
+      signal_id: signalId,
+    });
+
+  } catch (error: any) {
+    console.error("API Error:", error);
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
+  }
+}

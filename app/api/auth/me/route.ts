@@ -27,9 +27,9 @@ export async function GET(req: Request) {
     // Check admin via role claim
     const isAdmin = decoded.role === "admin";
 
-    const expDate = new Date(decoded.exp * 1000);
-    console.log("Cookie expires at:", expDate.toString());
-    console.log("Is Admin?", isAdmin);
+    // const expDate = new Date(decoded.exp * 1000);
+    // console.log("Cookie expires at:", expDate.toString());
+    // console.log("Is Admin?", isAdmin);
 
     let userData = null;
 
@@ -54,9 +54,9 @@ export async function GET(req: Request) {
         uid: decoded.uid,
         email: decoded.email,
         role: isAdmin ? "admin" : userData?.role ?? "user",
-        plan: userData?.plan ?? "free",
-        courses: userData?.courses ?? [],
-        signals: userData?.signals ?? false,
+        plan: isAdmin ? "admin" : userData?.plan ?? "free",
+        courses: isAdmin ? null : userData?.courses ?? [],
+        signals: isAdmin ? false : userData?.signals ?? false,
       },
     });
   } catch (e) {

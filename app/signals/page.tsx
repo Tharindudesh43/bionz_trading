@@ -1,78 +1,47 @@
-// app/page.js
-import SignalCard from '@/components/signalCard'; // Assuming your component path is correct
+"use client";
 
-// Sample Data (using the same data for both cards for demonstration)
-const signalData = [
-    {
-  type: 'BUY',
-  status: 'Deactive',
-  symbol: 'BTC/USDT',
-  timeAgo: '2 hours Ago',
-  leverage: '10X',
-  entryPrice: '$2.5-7.5',
-  exitPrice: '$3.0-5.0',
-  stopLoss: '$2.22-3.25',
-  profitPercentage: '50',
-  winCount: 2,
-  lossCount: 5,
-  date: '2025.10.11',
-},
-{
-  type: 'SELL',
-  status: 'Active',
-  symbol: 'BTC/USDT',
-  timeAgo: '2 hours Ago',
-  leverage: '10X',
-  entryPrice: '$2.5-7.5',
-  exitPrice: '$3.0-5.0',
-  stopLoss: '$2.22-3.25',
-  profitPercentage: '100',
-  winCount: 2,
-  lossCount: 5,
-  date: '2025.10.11',
-},
-{
-  type: 'BUY',
-  status: 'Deactive',
-  symbol: 'BTC/USDT',
-  timeAgo: '2 hours Ago',
-  leverage: '10X',
-  entryPrice: '$2.5-7.5',
-  exitPrice: '$3.0-5.0',
-  stopLoss: '$2.22-3.25',
-  profitPercentage: '100',
-  winCount: 2,
-  lossCount: 5,
-  date: '2025.10.11',
-},{
-  type: 'SELL',
-  status: 'Deactive',
-  symbol: 'BTC/USDT',
-  timeAgo: '2 hours Ago',
-  leverage: '10X',
-  entryPrice: '$2.5-7.5',
-  exitPrice: '$3.0-5.0',
-  stopLoss: '$2.22-3.25',
-  profitPercentage: '100',
-  winCount: 2,
-  lossCount: 10,
-  date: '2025.10.11',
-}
-];
+import SignalCard from '@/components/AdminComponents/AdminSignalCard';
+import { useEffect, useState } from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "@/firebase/FirebaseClient"; // client Firestore
+import type { SignalModel } from '@/types/signal_models';
+export default function Signal() {
 
-export default function Home() {
+   const [signals, setSignals] = useState<SignalModel[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchSignals = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/signals`);
+      const data = await res.json();
+      setSignals(data);
+      console.log("Fetched signals:", data);
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchSignals();
+
+    // Optional: Polling every 5 seconds for real-time-ish updates
+    const interval = setInterval(fetchSignals, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+
   return (
     // Updated container class:
     // 1. Removed min-h-screen so the container only takes up the necessary height.
     // 2. Added 'flex-col' to stack the cards vertically.
     // 3. Added 'gap-y-6' for vertical spacing between the cards.
     // 4. Added 'py-8' to ensure spacing at the top and bottom of the content.
-    <div className="flex flex-col items-center bg-gray-50 p-4 py-8 gap-y-6 min-h-screen">
-      {
-        signalData.map((signal, index) => (
-            <SignalCard signal={signal} key={index} />
-        ))
-      }
+   <div className="flex flex-col items-center bg-gray-50 p-4 py-8 gap-y-6 min-h-screen">
+        {/* {signals.map((signal) => (
+          <SignalCard signal={signal} key={signal.id} />
+        ))} */}
     </div>
   );
 }

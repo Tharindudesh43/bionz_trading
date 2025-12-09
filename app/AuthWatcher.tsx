@@ -12,7 +12,8 @@ export default function AuthWatcher() {
       const res = await fetch("/api/auth/me");
       const data = await res.json();
 
-      console.log("AuthWatcher - User session data:", data.loggedIn, data.user , data);
+      console.log("AuthWatcher -> Session data:", data.loggedIn );
+      console.log("AuthWatcher -> User Data:", data.user );
       if (data.loggedIn) {
         // This will now receive the filtered { uid, email } object
         dispatch(
@@ -23,7 +24,7 @@ export default function AuthWatcher() {
     }
 
     checkSession();
-  }, []); // Runs once on client mount
+  }, []); 
 
   return null;
 }
