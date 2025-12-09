@@ -51,7 +51,7 @@ export default function AdminAnalyzeRow(props: AnalyzeModel) {
         <td className="px-4 py-3">
           <div className="w-24 h-14 overflow-hidden rounded-md border">
             <Image
-              src={props.analyze_image}
+              src={props.analyze_image.toString() || ""}
               alt="analysis"
               width={96}
               height={56}
