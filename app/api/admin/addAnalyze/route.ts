@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminDB,adminStorage } from "@/firebase/FirebaseAdmin";
+import { adminDB } from "@/firebase/FirebaseAdmin";
 import { v4 as uuidv4 } from "uuid";
 import  { AnalyzeModel } from '@/types/analyze_model'
 
