@@ -165,7 +165,7 @@ const SignalCard: React.FC<{
 
         {/* Small Top Date */}
         <div className="absolute top-2 left-2 text-[10px] md:text-xs text-gray-600 font-medium">
-          {formatDateTime(new Date(displaySignal.editedAt?.toString()))}
+          {formatDateTime(new Date(displaySignal.editedAt?.toString() || ""))}
         </div>
 
         {/* Left Block */}
@@ -242,7 +242,7 @@ const SignalCard: React.FC<{
           >
             {displaySignal.edited
               ? `Edited | ${formatDateTime(
-                  new Date(displaySignal.editedAt?.toString())
+                  new Date(displaySignal.editedAt?.toString() || "")
                 )}`
               : "Not Edited"}
           </div>
