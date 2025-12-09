@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import admin,{adminDB} from "@/firebase/FirebaseAdmin";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { AnalyzeModel } from "@/types/analyze_model";
 
 export async function GET(req: Request) {
@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     return {
       id: doc.id,      
       analyze_id: d.analyze_id,
-      created_date: d.created_date.toDate().toISOString(),
+      created_date: d.created_date instanceof Timestamp ? d.created_date.toDate().toISOString() : d.created_date,
       analyze_image: d.analyze_image,
       analyze_description: d.analyze_description,
       pair: d.pair,
