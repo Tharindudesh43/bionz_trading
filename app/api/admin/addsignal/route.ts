@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminDB } from "@/firebase/FirebaseAdmin";
 import type { SignalModel } from "@/types/signal_models";
-import { FieldValue } from "firebase-admin/firestore";
 
 export async function POST(req: Request) {
   try {

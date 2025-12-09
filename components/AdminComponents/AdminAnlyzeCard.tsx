@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { Timestamp } from "firebase/firestore";
 import { FaInfoCircle } from "react-icons/fa";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
