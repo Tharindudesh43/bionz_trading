@@ -52,7 +52,7 @@ export default function AdminAnalyzeRow(props: AnalyzeModel) {
           <div className="w-24 h-14 overflow-hidden rounded-md border">
             <Image
               src={typeof props.analyze_image === "string" ? props.analyze_image : ""}
-              alt="analysis"
+              alt="analysissss"
               width={96}
               height={56}
               className="object-cover w-full h-full"
