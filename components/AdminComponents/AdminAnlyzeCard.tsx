@@ -50,13 +50,19 @@ export default function AdminAnalyzeRow(props: AnalyzeModel) {
         {/* Image Preview */}
         <td className="px-4 py-3">
           <div className="w-24 h-14 overflow-hidden rounded-md border">
-            <Image
-              src={typeof props.analyze_image === "string" ? props.analyze_image : ""}
-              alt="analysissss"
-              width={96}
-              height={56}
-              className="object-cover w-full h-full"
-            />
+            {props.analyze_image ? (
+              <Image
+                src={props.analyze_image as string}
+                alt="analysis"
+                width={96}
+                height={56}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                No Image
+              </div>
+            )}
           </div>
         </td>
 
