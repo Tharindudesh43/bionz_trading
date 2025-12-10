@@ -41,10 +41,9 @@ export default function Analyze() {
     setFilter(filter);
   };
   
-  useEffect(() => {
-    const fetchAnalyzes = async () => {
+   const fetchAnalyzes = async () => {
       try {
-        setLoading(true);
+        setLoading(true); // <-- Keep: Starts loading state before fetch
         const response = await fetch("/api/analyze");
         const data = await response.json();
 
@@ -52,16 +51,18 @@ export default function Analyze() {
         if (data.success) {
           setAnalyzes(data.data);
         }
-        setLoading(false);
+        setLoading(false); // <-- Ends loading state on success
       } catch (error) {
         console.error("Error fetching analyzes:", error);
-        setLoading(false);
+        setLoading(false); // <-- Ends loading state on error
       }
     };
-    setLoading(true);
+    
+useEffect(() => {
     fetchAnalyzes();
   }, []);
 
+  
   return (
     <div className="min-h-screen bg-white">
       <div className="w-full flex justify-end items-center gap-4 px-4 py-3 md:px-8">

@@ -11,7 +11,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import AnalyzePopUP from "@/components/analyze_popup";
 import React from "react";
 import { FaInfoCircle } from "react-icons/fa";
-import { AiFillDelete, AiFillEdit, AiFillEye } from "react-icons/ai";
+import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -308,7 +308,7 @@ export default function AnalyzePage() {
         analyze_description: analyzeDescription,
         created_date: new Date().toISOString(),
         edited: false,
-        analyze_image: imageFile || "",
+        analyze_image: "",
         edited_date: new Date().toISOString(),
         pair: pair,
         status: "active",

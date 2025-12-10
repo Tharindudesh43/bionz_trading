@@ -1,13 +1,9 @@
-
 "use client"
 
 import React from 'react';
 import Image from 'next/image';
 import CandleImage from '@/assets/candle_landing.png';
 import SocialImage from '@/assets/social-media.png';
-
-// --- Placeholder for the Candle Image Import (Assumed to be correct) ---
-// import CandleImage from '@/assets/candle_landing.png'; 
 
 // --- Data for the Market Ticker ---
 const marketData = [
@@ -26,32 +22,25 @@ const marketData = [
 
 // --- Optimized Crypto Candles Image Component ---
 const CryptoCandlesImage = () => (
-    // Responsive width scaling with max-width to control size on huge screens
     <div className="w-full max-w-[450px] lg:max-w-[550px] flex justify-center lg:justify-end">
-        {/* Replace with your actual Next.js Image component setup */}
         <div className="w-full h-64 sm:h-80 md:h-96 bg-gray-900 rounded-lg shadow-2xl shadow-green-900/40 flex items-center justify-center text-center text-gray-500">
             <Image src={CandleImage} alt="Candlestick chart" className="w-full h-auto" priority={true} />
         </div>
-        {/* <Image src={CandleImage} alt="Candlestick chart" className="w-full h-auto" priority={true} /> */}
     </div>
 );
 
 // --- Optimized Mobile App Image Component (Visual Depth) ---
 const MobileAppImage = () => (
-    // Max width set for image container
     <div className="relative mx-auto w-full max-w-sm sm:max-w-md lg:max-w-lg">
         <div className="aspect-square bg-neutral-900 rounded-full flex items-center justify-center p-8 shadow-2xl shadow-purple-900/50">
             <Image src={SocialImage} alt="Mobile App" className="w-full h-auto rounded-2xl" priority={true} />
-            {/* <div className="w-3/4 h-3/4 bg-gray-800 rounded-2xl flex items-center justify-center border-4 border-gray-700">
-                <Image src={SocialImage} alt="Mobile App" className="w-full h-auto rounded-2xl" priority={true} />
-            </div> */}
         </div>
-        
     </div>
 );
 
 // --- Main Landing Body Component ---
-export const LandingBody = () => {
+// ⚠️ FIX: Removed the 'export' keyword from the named function declaration.
+const LandingBody = () => {
     return (
         // Removed `mt-5` from here. The padding should be handled by the Layout or the first section's top padding.
         <div className="bg-black text-white min">
