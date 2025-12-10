@@ -125,7 +125,7 @@ const AnalyzeFormModal: React.FC<AnalyzeFormModalProps> = ({
           <Textarea
             className="text-black"
             value={description}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter detailed analysis description"
             rows={4}
           />
