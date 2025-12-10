@@ -6,7 +6,6 @@ import Image from "next/image";
 import React, { use } from "react";
 import { useEffect } from "react";
 import AnalyzePopUP from "@/components/analyze_popup";
-import { Spinner } from "@/src/components/ui/shadcn-io/spinner";
 
 interface AnalyzeProps {
   analyze_id: string;
@@ -21,7 +20,8 @@ const itemsPerPage = 10;
 
 export default function Analyze() {
   const [filter, setFilter] = React.useState<string>("ALL");
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string>('');
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [analyzes, setAnalyzes] = React.useState<AnalyzeProps[]>([]);
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -99,7 +99,7 @@ useEffect(() => {
         <div className="  overflow-hidden  transition-shadow duration-300">
           {loading == true && analyzes.length === 0 ? (
             <div className="flex items-center justify-center h-screen">
-              <Spinner key={1} variant="bars" />
+              <p className="text-gray-500 text-center">Loading analyzes...</p>
             </div>
           ) : analyzes.length === 0 && loading == false ? (
             <div className="flex items-center justify-center h-screen">

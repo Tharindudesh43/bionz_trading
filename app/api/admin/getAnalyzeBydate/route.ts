@@ -27,31 +27,28 @@ import { adminDB } from "@/firebase/FirebaseAdmin";
 // Import the necessary Timestamp type from the Admin SDK
 import { Timestamp } from "firebase-admin/firestore";
 
-/**
- * Helper function to recursively convert Firebase Timestamp objects to ISO date strings.
- * @param obj The data object retrieved from Firestore.
- * @returns The object with Timestamps converted to strings.
- */
-function convertTimestampsToStrings(obj: any): any {
+function convertTimestampsToStrings<T>(obj: T): T {
+    // 1. Base Case: If null or not an object, return the value as is.
     if (obj === null || typeof obj !== 'object') {
         return obj;
     }
 
     if (obj instanceof Timestamp) {
-        // Convert the Timestamp object to a JavaScript Date, then to an ISO string
-        return obj.toDate().toISOString();
+        return obj.toDate().toISOString() as T; 
     }
 
     if (Array.isArray(obj)) {
-        return obj.map(item => convertTimestampsToStrings(item));
+        return obj.map(item => convertTimestampsToStrings(item)) as T;
     }
-
-    const newObj: { [key: string]: any } = {};
+    const newObj = {} as T; 
+    
+    // Type-safely iterate over keys
     for (const key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            newObj[key] = convertTimestampsToStrings(obj[key]);
+            newObj[key as keyof T] = convertTimestampsToStrings(obj[key]);
         }
     }
+
     return newObj;
 }
 

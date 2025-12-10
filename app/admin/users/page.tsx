@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { UserModel } from "@/types/user_models";
 
-
 export default function UserManagementPage() {
   const [users, setUsers] = useState<UserModel[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -16,11 +15,13 @@ export default function UserManagementPage() {
       const response = await axios.get("/api/admin/getUsers");
       if (response.data.success) {
         setUsers(response.data.users);
+        setError("");
       } else {
         setError(response.data.message || "Failed to fetch users");
       }
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      const errorMessage = (err as Error).message || "Something went wrong";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

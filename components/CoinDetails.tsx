@@ -126,7 +126,7 @@ export async function CoinPage({ promise }: { promise: Promise<CoinDetails> }) {
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
           >
-            Visit {details.name}'s Website
+            Visit {details.name}&apos;s Website
           </a>
         </div>
 

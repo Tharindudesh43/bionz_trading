@@ -8,10 +8,9 @@ import type { SignalModel } from '@/types/signal_models';
 export default function Signal() {
 
    const [signals, setSignals] = useState<SignalModel[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchSignals = async () => {
-    setLoading(true);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/signals`);
       const data = await res.json();
