@@ -711,9 +711,7 @@ export default function AdminSignalPage() {
         // Use &quot; instead of "
         {!loading && signals.length === 0 && (
           <div className="flex flex-col items-center justify-center min-h-[300px] text-center text-gray-500 text-lg">
-            No signals available. Click{" "}
-            <span className="font-semibold">&quot;Add Signal&quot;</span> to
-            create one.
+            No signals available.
           </div>
         )}
         {/* Signals List */}
