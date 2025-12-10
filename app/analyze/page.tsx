@@ -20,7 +20,7 @@ const itemsPerPage = 10;
 
 export default function Analyze() {
   const [filter, setFilter] = React.useState<string>("ALL");
-  const [error, setError] = React.useState<string>('');
+  const [error, setError] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(true);
   const [analyzes, setAnalyzes] = React.useState<AnalyzeProps[]>([]);
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -40,29 +40,28 @@ export default function Analyze() {
     setLoading(true);
     setFilter(filter);
   };
-  
-   const fetchAnalyzes = async () => {
-      try {
-        setLoading(true); // <-- Keep: Starts loading state before fetch
-        const response = await fetch("/api/analyze");
-        const data = await response.json();
 
-        console.log("Fetched analyzes data:", data);
-        if (data.success) {
-          setAnalyzes(data.data);
-        }
-        setLoading(false); // <-- Ends loading state on success
-      } catch (error) {
-        console.error("Error fetching analyzes:", error);
-        setLoading(false); // <-- Ends loading state on error
+  async function fetchAnalyzes() {
+    try {
+      setLoading(true); // <-- Keep: Starts loading state before fetch
+      const response = await fetch("/api/analyze");
+      const data = await response.json();
+
+      console.log("Fetched analyzes data:", data);
+      if (data.success) {
+        setAnalyzes(data.data);
       }
-    };
-    
-useEffect(() => {
+      setLoading(false); // <-- Ends loading state on success
+    } catch (error) {
+      console.error("Error fetching analyzes:", error);
+      setLoading(false); // <-- Ends loading state on error
+    }
+  };
+
+  useEffect(() => {
     fetchAnalyzes();
   }, []);
 
-  
   return (
     <div className="min-h-screen bg-white">
       <div className="w-full flex justify-end items-center gap-4 px-4 py-3 md:px-8">

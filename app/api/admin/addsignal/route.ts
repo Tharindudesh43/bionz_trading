@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       signal: data,
     });
   } catch (error) {
-    console.error("API Error:", error);
+    // console.error("API Error:", error.toString());
 
     // 1. Determine the error message safely
     let errorMessage = "An unknown server error occurred.";
