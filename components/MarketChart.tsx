@@ -61,11 +61,11 @@ const MarketChart: React.FC<LineProps> = ({ id }) => {
   const { prices } = chartData;
 
   const data = {
-    labels: prices.map((entry: any) => new Date(entry[0]).toLocaleDateString()),
+    labels: prices.map((entry) => new Date(entry[0]).toLocaleDateString()),
     datasets: [
       {
         label: "Price (USD)",
-        data: prices.map((entry: any) => entry[1].toFixed(2)),
+        data: prices.map((entry) => entry[1].toFixed(2)),
         borderColor: "orange",
         borderWidth: 2,
         pointRadius: 4,
