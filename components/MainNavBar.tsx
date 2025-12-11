@@ -104,7 +104,7 @@ export const NavBar = () => {
       <div
         className={`sm:hidden transition-all duration-500 ease-in-out overflow-hidden ${bgColor} ${
           isOpen
-            ? "max-h-96 opacity-100 py-3 border-t border-gray-700"
+            ? "max-h-110 opacity-100 py-3 border-t border-gray-700"
             : "max-h-0 opacity-0"
         }`}
       >

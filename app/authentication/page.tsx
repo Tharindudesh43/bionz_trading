@@ -84,7 +84,7 @@ export default function SignInPage() {
  return (
     <div className="flex flex-col items-center py-12 px-4 bg-gray-50 dark:bg-gray-900 min-h-fit">
       <div className="w-full max-w-5xl">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">My account</h1>
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6 m-4">My account</h1>
 
         {/* Disclaimer Box */}
         <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md border border-blue-200 dark:border-blue-800 mb-8">
