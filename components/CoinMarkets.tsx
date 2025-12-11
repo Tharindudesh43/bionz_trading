@@ -21,7 +21,7 @@ interface Props {
 
 export default function Coins({ coin }: Props) {
   return (
-    <div className="p-2 sm:p-4 lg:p-8 mt-27">
+    <div className="p-2 sm:p-4 lg:p-8 mt-27 sm:mt-32 lg:mt-24">
   <div className="overflow-x-auto">
     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
       <thead className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 uppercase text-xs tracking-wider">

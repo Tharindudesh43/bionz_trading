@@ -6,7 +6,7 @@ import {
   Tooltip,
   PointElement,
   LineElement,
-} from "chart.js";
+} from 'chart.js';
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 
@@ -33,7 +33,6 @@ const MarketChart: React.FC<LineProps> = ({ id }) => {
           `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=30&precision=2&interval=daily`
         );
         const data = await response.json();
-        console.log("chartData:", data);
         setChartData(data);
       } catch (error) {
         console.log(error);

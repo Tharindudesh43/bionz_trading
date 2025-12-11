@@ -29,7 +29,6 @@ const CryptoCandlesImage = () => (
     </div>
 );
 
-// --- Optimized Mobile App Image Component (Visual Depth) ---
 const MobileAppImage = () => (
     <div className="relative mx-auto w-full max-w-sm sm:max-w-md lg:max-w-lg">
         <div className="aspect-square bg-neutral-900 rounded-full flex items-center justify-center p-8 shadow-2xl shadow-purple-900/50">
@@ -38,29 +37,22 @@ const MobileAppImage = () => (
     </div>
 );
 
-// --- Main Landing Body Component ---
-// ⚠️ FIX: Removed the 'export' keyword from the named function declaration.
 const LandingBody = () => {
     return (
         // Removed `mt-5` from here. The padding should be handled by the Layout or the first section's top padding.
         <div className="bg-black text-white min">
             
-            {/* 1. HERO SECTION (Text and Candles) */}
             <section className="container mx-auto px-6 md:px-8 xl:px-20 py-16 sm:py-24 lg:py-32 pt-28"> 
-                {/* pt-28 (appx pt-16 + a large gap) ensures content is below the NavBar */}
                 
                 <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12">
                     
-                    {/* Left Text Content */}
                     <div className="w-full lg:w-1/2 pt-8 lg:pt-0">
                         <p className="text-green-500 text-sm font-semibold mb-4 tracking-widest uppercase">Best Crypto Signals & Learning Place</p>
                         
-                        {/* Responsive Heading Size and Weight for a modern look */}
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
                             Welcome To <span className="text-green-400">Bionz Trading</span>
                         </h1>
                         
-                        {/* Responsive Paragraph Size */}
                         <p className="text-gray-300 mb-8 text-base sm:text-lg leading-relaxed max-w-xl">
                             Over 10,000+ trader trust Bionz Trading worldwide. From complete beginners to advanced professionals, thousands of traders rely on Bionz for accurate guidance, education, and reliable trading insights.
                         </p>
@@ -69,20 +61,18 @@ const LandingBody = () => {
                         </p>
                     </div>
 
-                    {/* Right Candlestick Chart */}
                     <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
                         <CryptoCandlesImage />
                     </div>
                 </div>
             </section>
         
-            {/* 2. MARKET TICKER SECTION (Optimized for Horizontal Scroll) */}
+   
             <section className="py-4 bg-neutral-900 border-y border-gray-700 relative overflow-hidden">
                 <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-neutral-900 to-transparent z-20"></div>
                 <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-neutral-900 to-transparent z-20"></div>
 
                 <div className="container mx-auto px-4">
-                    {/* Added hidden scrollbar classes and ensured a wide, non-wrapping container */}
                     <div className="flex space-x-6 sm:space-x-10 py-1 overflow-x-scroll custom-scrollbar-hide">
                         {marketData.map((item, index) => (
                             <div

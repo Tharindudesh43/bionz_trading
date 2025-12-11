@@ -1,5 +1,5 @@
 "use client";
-import { Suspense } from "react";
+import { Suspense, use, useEffect } from "react";
 import { CoinPage } from "@/components/CoinDetails";
 import { useCoinDetails } from "@/hooks/useCoinDetails";
 import { useParams } from "next/navigation";

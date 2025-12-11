@@ -1,11 +1,14 @@
+"use client";
+
 import { CoinDetails } from "@/types/coinDetails";
 import Image from "next/image";
 import alt from "@/assets/alt coin.jpg" with { type: "image" };
 import MarketChart from "@/components/MarketChart";
 import { FiArrowLeft } from "react-icons/fi";
+import { use, useEffect } from "react";
 
 export async function CoinPage({ promise }: { promise: Promise<CoinDetails> }) {
-  const details = await promise;
+  const details = await promise; 
 
   return (
     <div className="mt-15 relative bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -13,7 +16,7 @@ export async function CoinPage({ promise }: { promise: Promise<CoinDetails> }) {
       <nav className="fixed p-4 left-1 z-50 ">
         <button
           onClick={() => window.history.back()}
-          className="flex items-center px-4 py-2 bg-[#f59e0b] cursor-pointer text-white rounded-full shadow-md hover:bg-[#d97706] transition"
+          className="flex items-center px-4 py-2 sm:mt-5 bg-[#f59e0b] cursor-pointer text-white rounded-full shadow-md hover:bg-[#d97706] transition"
         >
           <FiArrowLeft className="mr-2" size={20} />
           Back
@@ -25,10 +28,11 @@ export async function CoinPage({ promise }: { promise: Promise<CoinDetails> }) {
         {/* Coin Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-6">
           <Image
-            src={details.image}
+            src={details.image.small.toString()}
             alt={details.name}
             width={50}
             height={50}
+            data-nimg="1"
             className="rounded-full shadow-sm"
           />
           <div>

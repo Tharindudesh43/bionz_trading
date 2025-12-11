@@ -67,8 +67,9 @@ export default function Home() {
       z-30 
       shadow-sm
       right-0
-      top-14      /* mobile */
-      md:top-16   /* tablet + desktop */
+      top-14
+      sm:top-19  /* tablet + desktop */
+      md:top-19   /* tablet + desktop */
       lg:top-17   /* bigger screens */
     ">
       <div className="flex items-center justify-start px-3 py-3">
