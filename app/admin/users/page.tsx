@@ -19,8 +19,20 @@ export default function UserManagementPage() {
       } else {
         setError(response.data.message || "Failed to fetch users");
       }
-    } catch (err: any) {
-      const errorMessage = (err as Error).message || "Something went wrong";
+    } catch (error) {
+      console.error("API Error:", error);
+
+      let errorMessage = "An unknown server error occurred.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
+        errorMessage = (error as { message: string }).message;
+      }
       setError(errorMessage);
     } finally {
       setLoading(false);
