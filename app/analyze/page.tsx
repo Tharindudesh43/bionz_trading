@@ -58,9 +58,10 @@ export default function Analyze() {
     }
   };
 
-  useEffect(() => {
-    fetchAnalyzes();
-  }, [loading]);
+  // useEffect(() => {
+  //   fetchAnalyzes();
+  //   return () => {}
+  // }, []);
 
   return (
     <div className="min-h-screen bg-white">
