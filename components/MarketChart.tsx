@@ -23,8 +23,17 @@ interface LineProps {
   id: string;
 }
 
+type DataPoint = [number, number];
+
+// Full chart data
+type ChartData = {
+  prices: DataPoint[];
+  market_caps: DataPoint[];
+  total_volumes: DataPoint[];
+};
+
 const MarketChart: React.FC<LineProps> = ({ id }) => {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +43,7 @@ const MarketChart: React.FC<LineProps> = ({ id }) => {
         );
         const data = await response.json();
         setChartData(data);
+        console.log(data);
       } catch (error) {
         console.log(error);
       }
