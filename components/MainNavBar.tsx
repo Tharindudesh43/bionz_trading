@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import Link from "next/link";
 // Component for the Logo
 const Logo = () => (
   <div className="flex items-center space-x-2">
@@ -57,8 +57,13 @@ export const NavBar = () => {
 
           {/* Sign In Button (Desktop - Uses 'text-sm') */}
           <div className="hidden sm:block">
-            <button className="text-sm text-white relative transition-all duration-300 hover:text-gray-300 hover:scale-[1.06]">
-              Sign in
+            <button>
+              <Link
+                href="/authentication"
+                className="text-sm text-white relative transition-all duration-300 hover:text-gray-300 hover:scale-[1.06]"
+              >
+                Sign in
+              </Link>
             </button>
           </div>
 
@@ -117,7 +122,12 @@ export const NavBar = () => {
 
           {/* Mobile Sign In Button (Uses 'text-base') */}
           <button className="w-full px-3 py-2 text-base font-medium text-center text-white bg-transparent border border-white rounded-md hover:bg-white hover:text-neutral-800 transition-all duration-300 ease-in-out">
-            Sign in
+            <Link
+              href="/authentication"
+              className="text-sm text-white relative transition-all duration-300 hover:text-gray-300 hover:scale-[1.06]"
+            >
+              Sign in
+            </Link>
           </button>
         </div>
       </div>
