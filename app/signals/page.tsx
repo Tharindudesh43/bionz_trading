@@ -10,25 +10,36 @@ export default function Signal() {
    const [signals, setSignals] = useState<SignalModel[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchSignals = async () => {
+  useEffect(() => {
+  let isMounted = true; // Prevent state updates after unmount
+
+  const loadSignals = async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/signals`);
       const data = await res.json();
-      setSignals(data);
-      console.log("Fetched signals:", data);
+      if (isMounted) {
+        setSignals(data);
+      }
     } catch (err) {
       console.error(err);
+    } finally {
+      if (isMounted) {
+        setLoading(false);
+      }
     }
-    setLoading(false);
   };
 
-  useEffect(() => {
-    fetchSignals();
+  loadSignals();
 
-    // Optional: Polling every 5 seconds for real-time-ish updates
-    const interval = setInterval(fetchSignals, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  // Polling every 5 seconds
+  const interval = setInterval(loadSignals, 5000);
+
+  return () => {
+    isMounted = false;
+    clearInterval(interval);
+  };
+}, []);
+
 
 
   return (

@@ -58,18 +58,34 @@ export async function POST(req: Request) {
       },
     });
 
-  } catch (error: any) {
-    console.log("Error during sign-up:", error);
-    if(error.code === 'auth/email-already-in-use'){
-      console.log("Email already in use:");
+  } catch (error: unknown) {
+  console.log("Error during sign-up:", error);
+
+  // Narrow the error type before accessing properties
+  if (typeof error === "object" && error !== null && "code" in error) {
+    const err = error as { code: string; message?: string };
+
+    if (err.code === "auth/email-already-in-use") {
       return NextResponse.json(
-        { success: false, message: 'Email already in use' },
+        { success: false, message: "Email already in use" },
         { status: 400 }
       );
     }
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 400 }
-    );
   }
+
+  // Generic fallback error handling
+  const message =
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as any).message === "string"
+      ? (error as any).message
+      : "Unknown error";
+
+  return NextResponse.json(
+    { success: false, message },
+    { status: 400 }
+  );
+}
+
 }

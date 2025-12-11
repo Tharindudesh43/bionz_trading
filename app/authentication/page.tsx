@@ -89,7 +89,7 @@ export default function SignInPage() {
         {/* Disclaimer Box */}
         <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-md border border-blue-200 dark:border-blue-800 mb-8">
           <p className="text-blue-800 dark:text-blue-200 text-sm">
-            Don't invest unless you're prepared to lose all the money you invest. This is a high-risk investment and you are unlikely to be protected if something goes wrong. <Link href="/privacy-policy" className="text-blue-600 dark:text-blue-400 hover:underline">Take 2 minutes to learn more</Link>
+            Dont invest unless youre prepared to lose all the money you invest. This is a high-risk investment and you are unlikely to be protected if something goes wrong. <Link href="/privacy-policy" className="text-blue-600 dark:text-blue-400 hover:underline">Take 2 minutes to learn more</Link>
           </p>
         </div>
 

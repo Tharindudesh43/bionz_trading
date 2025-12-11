@@ -79,7 +79,7 @@ export default function PrivacyPolicyPage() {
           target="_blank"
           className="text-blue-600 hover:underline"
         >
-          3dcart's privacy policy
+          3dcart privacy policy
         </a>
         .
       </p>

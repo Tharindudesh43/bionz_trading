@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (data.error) {
       const code = data.error.message;
 
-      const errorMap: any = {
+      const errorMap: Record<string, string> = {
         INVALID_PASSWORD: "Incorrect password",
         EMAIL_NOT_FOUND: "Email not registered",
       };
@@ -91,11 +91,39 @@ export async function POST(req: Request) {
 
     return response;
 
-  } catch (err: any) {
-    console.error("Error during sign-in:", err);
+  } catch (error) {
+    // console.error("API Error:", error.toString());
+
+    // 1. Determine the error message safely
+    let errorMessage = "An unknown server error occurred.";
+
+    // 2. Check if the error object is a standard JavaScript Error
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    // Optional: Check if it's an object with a 'message' property (e.g., a custom error)
+    else if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error
+    ) {
+      // We assert that error is an object with a message property for TypeScript
+      errorMessage = (error as { message: string }).message;
+    }
+
+    // 3. Return the sanitized message in the response
     return NextResponse.json(
-      { success: false, message: err.message },
+      { success: false, message: errorMessage },
       { status: 500 }
     );
   }
+  
+  
+  // catch (err: any) {
+  //   console.error("Error during sign-in:", err);
+  //   return NextResponse.json(
+  //     { success: false, message: err.message },
+  //     { status: 500 }
+  //   );
+  // }
 }

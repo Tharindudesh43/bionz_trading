@@ -30,10 +30,37 @@ export async function POST() {
     });
 
     return response;
-  } catch (err: any) {
+  } catch (error) {
+    // console.error("API Error:", error.toString());
+
+    // 1. Determine the error message safely
+    let errorMessage = "An unknown server error occurred.";
+
+    // 2. Check if the error object is a standard JavaScript Error
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    // Optional: Check if it's an object with a 'message' property (e.g., a custom error)
+    else if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error
+    ) {
+      // We assert that error is an object with a message property for TypeScript
+      errorMessage = (error as { message: string }).message;
+    }
+
+    // 3. Return the sanitized message in the response
     return NextResponse.json(
-      { success: false, message: err.message },
+      { success: false, message: errorMessage },
       { status: 500 }
     );
   }
+  
+  // catch (err: any) {
+  //   return NextResponse.json(
+  //     { success: false, message: err.message },
+  //     { status: 500 }
+  //   );
+  // }
 }
