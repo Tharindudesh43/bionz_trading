@@ -78,8 +78,8 @@ export async function POST(req: Request) {
     typeof error === "object" &&
     error !== null &&
     "message" in error &&
-    typeof (error as any).message === "string"
-      ? (error as any).message
+    typeof (error).message === "string"
+      ? (error).message
       : "Unknown error";
 
   return NextResponse.json(
