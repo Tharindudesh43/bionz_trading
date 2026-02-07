@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-import { useSearchParams } from "next/dist/client/components/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 // import { useSearchParams } from "next/navigation";
 
@@ -12,9 +11,14 @@ type CourseItem = {
 };
 
 export default function Payments() {
-  const searchParams = useSearchParams();
-  const uid = searchParams.get("uid");
-  const email = searchParams.get("email");
+  const [uid, setUid] = useState("");
+const [email, setEmail] = useState("");
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  setUid(params.get("uid") ?? "");
+  setEmail(params.get("email") ?? "");
+}, []);
 
   const [selectedOption, setSelectedOption] = useState<
     "pro" | "course" | "book"
