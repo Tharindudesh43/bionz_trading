@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Call API route for session validation
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/checkAccess`, {
+  const res = await fetch(`/api/admin/checkAccess`, {
     method: "POST",
     body: JSON.stringify({ session }),
     headers: { "Content-Type": "application/json" },

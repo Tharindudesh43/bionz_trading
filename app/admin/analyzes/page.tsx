@@ -360,7 +360,7 @@ const AnalyzeEditModal: React.FC<AnalyzeEditModalProps> = ({
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
       <div
         className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-semibold mb-5 text-black">Edit Analysis</h2>
 
@@ -527,7 +527,7 @@ const AnalyzeEditModal: React.FC<AnalyzeEditModalProps> = ({
 export default function AnalyzePage() {
   //Edit Analyze States
   const [editAnalyzeImageFile, setEditAnalyzeImageFile] = useState<File | null>(
-    null
+    null,
   );
   const [editExistingImageUrl, setEditExistingImageUrl] = useState<string>("");
   const [editAnalyzeId, setEditAnalyzeId] = useState<string>("");
@@ -584,10 +584,12 @@ export default function AnalyzePage() {
   const fetchanalyze = async ({
     page = 1,
     clear = false,
-    iffilterclicked = false
-  }
-  ) => {
-    if (iffilterclicked == true && (dateFilter.start === "" || dateFilter.end === "")) {
+    iffilterclicked = false,
+  }) => {
+    if (
+      iffilterclicked == true &&
+      (dateFilter.start === "" || dateFilter.end === "")
+    ) {
       enqueueSnackbar("Select both start and end dates!", {
         variant: "error",
         autoHideDuration: 3000,
@@ -606,8 +608,8 @@ export default function AnalyzePage() {
     try {
       const res = await axios.get(
         clear
-          ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/getAnalyzeBydate?page=${page}&limit=${limit}`
-          : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/getAnalyzeBydate?page=${page}&limit=${limit}${dateParams}`
+          ? `/api/admin/getAnalyzeBydate?page=${page}&limit=${limit}`
+          : `/api/admin/getAnalyzeBydate?page=${page}&limit=${limit}${dateParams}`,
       );
       setAnalyzes(res.data.data);
       setTotalPages(res.data.totalPages);
@@ -656,15 +658,11 @@ export default function AnalyzePage() {
         formData.append("analyze_image", imageFile);
       }
 
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/addAnalyze`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.post(`/api/admin/addAnalyze`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res.data.success) {
         fetchanalyze({ page: 1, clear: false, iffilterclicked: false });
@@ -684,7 +682,7 @@ export default function AnalyzePage() {
     setEditAnalyzeId(analyze.analyze_id);
     setEditAnalyzeType(analyze.type?.toString() || "");
     setEditExistingImageUrl(
-      typeof analyze.analyze_image === "string" ? analyze.analyze_image : ""
+      typeof analyze.analyze_image === "string" ? analyze.analyze_image : "",
     );
     setEditModalOpen(true);
     setEditAnalyzeStatus(analyze.status);
@@ -716,15 +714,11 @@ export default function AnalyzePage() {
         formData.append("edit_analyze_image", "");
       }
 
-      const res = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/editAnalyze`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.patch(`/api/admin/editAnalyze`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res.data.success) {
         fetchanalyze({ page: 1, clear: false, iffilterclicked: false });
@@ -743,8 +737,8 @@ export default function AnalyzePage() {
     setDeletingEnabled(true);
     try {
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/deleteAnalyze`,
-        { data: { analyze_id: deleteAnalyzeId } }
+        `/api/admin/deleteAnalyze`,
+        { data: { analyze_id: deleteAnalyzeId } },
       );
 
       if (res.data.success) {
@@ -828,7 +822,9 @@ export default function AnalyzePage() {
           </div>
 
           <button
-            onClick={() => fetchanalyze({ page: 1, clear: false, iffilterclicked: true })}
+            onClick={() =>
+              fetchanalyze({ page: 1, clear: false, iffilterclicked: true })
+            }
             className="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors"
           >
             Filter
@@ -838,7 +834,15 @@ export default function AnalyzePage() {
             <button
               onClick={() => {
                 setDateFilter({ start: "", end: "" });
-                setTimeout(() => fetchanalyze({ page: 1, clear: true, iffilterclicked: false }), 1000);
+                setTimeout(
+                  () =>
+                    fetchanalyze({
+                      page: 1,
+                      clear: true,
+                      iffilterclicked: false,
+                    }),
+                  1000,
+                );
               }}
               className="px-3 py-2 bg-gray-600 text-white text-xs font-bold rounded-lg hover:bg-gray-700 transition-colors"
             >
@@ -902,13 +906,13 @@ export default function AnalyzePage() {
                       <td className="px-6 py-4">
                         <span className="text-[11px] text-gray-500">
                           {dayjs(analyze.created_date.toString()).format(
-                            "MMM DD, YYYY"
+                            "MMM DD, YYYY",
                           )}
                           {analyze.edited && (
                             <div className="flex items-center gap-2 text-blue-400/80">
                               <span className="text-blue-400/80">
                                 {`Edited : ${dayjs(
-                                  analyze.edited_date.toString()
+                                  analyze.edited_date.toString(),
                                 ).fromNow()}`}
                               </span>
                             </div>
@@ -987,7 +991,7 @@ export default function AnalyzePage() {
                         >
                           {analyze.type} •{" "}
                           {dayjs(analyze.created_date.toString()).format(
-                            "DD MMM"
+                            "DD MMM",
                           )}
                         </span>
                       </div>
@@ -1041,14 +1045,26 @@ export default function AnalyzePage() {
             <div className="flex w-full md:w-auto gap-2 order-1 md:order-2">
               <button
                 disabled={currentPage === 1 || loading}
-                onClick={() => fetchanalyze({ page: currentPage - 1, clear: false, iffilterclicked: false })}
+                onClick={() =>
+                  fetchanalyze({
+                    page: currentPage - 1,
+                    clear: false,
+                    iffilterclicked: false,
+                  })
+                }
                 className="flex-1 md:flex-none px-4 py-2 text-xs font-bold text-gray-400 border border-gray-700 rounded-xl disabled:opacity-30"
               >
                 Prev
               </button>
               <button
                 disabled={currentPage === totalPages || loading}
-                onClick={() => fetchanalyze({ page: currentPage + 1, clear: false, iffilterclicked: false })}
+                onClick={() =>
+                  fetchanalyze({
+                    page: currentPage + 1,
+                    clear: false,
+                    iffilterclicked: false,
+                  })
+                }
                 className="flex-1 md:flex-none px-4 py-2 text-xs font-bold text-gray-400 border border-gray-700 rounded-xl disabled:opacity-30"
               >
                 Next

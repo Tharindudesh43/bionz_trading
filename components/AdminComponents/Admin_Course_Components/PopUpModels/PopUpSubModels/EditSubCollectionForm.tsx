@@ -83,7 +83,7 @@ const EditSubCollectionForm = ({
 
     try {
       const res = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesSubCollections/EditeSubCollection`,
+        `/api/admin/ServicesSubCollections/EditeSubCollection`,
         nativeFormData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

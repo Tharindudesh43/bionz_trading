@@ -28,7 +28,7 @@ const DeleteSubCollectionConfirmation = ({
     setError(null);
     try {
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesSubCollections/DeleteSubCollection`,
+        `/api/admin/ServicesSubCollections/DeleteSubCollection`,
         { data: { sub_collection_id: collectionId } }
       );
       if (!res.data.success) {

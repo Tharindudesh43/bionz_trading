@@ -56,7 +56,7 @@ const AddNewLessonForm = ({
     setIsLoading(true);
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesSubCollections/AddLesson`,
+        `/api/admin/ServicesSubCollections/AddLesson`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

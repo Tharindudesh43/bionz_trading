@@ -87,7 +87,7 @@ export default function CourseEditor() {
       setmaincollectionloading(true);
       await new Promise((resolve) => setTimeout(resolve, 500));
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/GetCollection/GetMainCollection`
+        `/api/admin/GetCollection/GetMainCollection`
       );
 
       setmainCollection(
@@ -105,7 +105,7 @@ export default function CourseEditor() {
       setsubcollectionloading(true);
       await new Promise((resolve) => setTimeout(resolve, 500));
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/GetCollection/GetSubCollection`
+        `/api/admin/GetCollection/GetSubCollection`
       );
       setsubCollections(
         Array.isArray(res.data.data) ? res.data.data : [res.data.data]

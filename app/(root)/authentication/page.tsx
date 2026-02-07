@@ -28,7 +28,7 @@ export default function SignInPage() {
   async function EmailPasswordLogin(e: React.FormEvent<HTMLFormElement>) {
   setIsLoginLoading(true);
   e.preventDefault();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/sign-in`, {
+  const res = await fetch(`/api/auth/sign-in`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email: loginEmail, password: loginPassword }),
@@ -53,7 +53,7 @@ export default function SignInPage() {
     e.preventDefault();
     setIsRegisterLoading(true);
     try{
-     const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/sign-up`,
+     const response = await axios.post(`/api/auth/sign-up`,
         {
           email: registerEmail,
           password: registerPassword,

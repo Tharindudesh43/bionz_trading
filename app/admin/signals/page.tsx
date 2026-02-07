@@ -523,7 +523,7 @@ export default function AdminSignalPage() {
       }
 
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/getSignalsByDate`,
+        `/api/admin/getSignalsByDate`,
         {
           params,
           // Removed multipart/form-data as GET requests should not have it
@@ -595,7 +595,7 @@ export default function AdminSignalPage() {
         status: "Active",
       };
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/addsignal`,
+        `/api/admin/addsignal`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -638,7 +638,7 @@ export default function AdminSignalPage() {
 
     try {
       const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/changesignalstatus`,
+        `/api/admin/changesignalstatus`,
         Data,
         {
           headers: {

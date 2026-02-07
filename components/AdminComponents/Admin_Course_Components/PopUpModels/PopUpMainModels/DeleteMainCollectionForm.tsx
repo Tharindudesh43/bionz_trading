@@ -29,7 +29,7 @@ const DeleteMainCollectionConfirmation = ({
     setError(null);
     try {
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesMainCollections/DeleteMainCollection`,
+        `/api/admin/ServicesMainCollections/DeleteMainCollection`,
         { data: { main_collection_id: collectionId } }
       );
 

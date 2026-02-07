@@ -31,7 +31,7 @@ const DeleteLessonConfirmation = ({
     setError(null);
     try {
       const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesSubCollections/DeleteLesson`,
+        `/api/admin/ServicesSubCollections/DeleteLesson`,
         {
           data: {
             parent_collection_id: parent_collection_id,

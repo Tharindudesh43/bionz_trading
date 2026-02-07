@@ -63,7 +63,7 @@ const AddMainCollectionForm = ({
     setIsLoading(true);
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesMainCollections/AddMainCollection`,
+        `/api/admin/ServicesMainCollections/AddMainCollection`,
         formData,
         {
           headers: {

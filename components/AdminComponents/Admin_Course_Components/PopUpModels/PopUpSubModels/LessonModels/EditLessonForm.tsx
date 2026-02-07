@@ -67,7 +67,7 @@ const EditLessonForm = ({
 
     try {
       const res = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesSubCollections/EditLesson`,
+        `/api/admin/ServicesSubCollections/EditLesson`,
         {
           formData: formData,
           parent_collection_id: parent_collection_id,

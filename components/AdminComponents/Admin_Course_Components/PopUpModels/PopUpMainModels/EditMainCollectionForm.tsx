@@ -76,7 +76,7 @@ const EditMainCollectionForm = ({
       setIsLoading(true);
       // NOTE: Ensure your backend handles the mixed FormData structure correctly
       const res = await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/ServicesMainCollections/EditeMainCollection`,
+        `/api/admin/ServicesMainCollections/EditeMainCollection`,
         formData,
         {
           headers: {
