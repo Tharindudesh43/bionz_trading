@@ -24,7 +24,7 @@ export default function CourseDetail({
 }: CoursePageProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const canAccessSubContent = isLoggedIn && isPurchased;
-  const { currentUser, loading } = useSelector((state: any) => state.user);
+  const { currentUser, loading } = useSelector((state: any | null) => state.user);
 
   return (
     <div className="bg-white text-black font-sans relative">

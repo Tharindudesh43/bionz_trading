@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../../app/globals.css";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import Footer from "@/components/footer";
-
 import MainNavaBar from "@/components/MainNavBar";
 
 const geistSans = Geist({

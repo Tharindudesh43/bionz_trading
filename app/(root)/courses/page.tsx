@@ -7,6 +7,7 @@ import MainCourseCollection from "@/components/mainCourseCollection";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CourseDetail from "@/components/subCourseCollection";
+import { MainCollection, SubCollection, subContentType } from "@/types/collection_models";
 
 
 export default function CourseGrid() {
@@ -14,11 +15,11 @@ export default function CourseGrid() {
     React.useState(false);
   const [otherCollectionloading, setOtherCollectionloading] =
     React.useState(false);
-  const [mainCourseCollection, setMainCourseCollection] = useState<any[]>([]);
-  const [otherCollection, setOtherCollection] = useState<any[]>([]);
+  const [mainCourseCollection, setMainCourseCollection] = useState<MainCollection[]>([]);
+  const [otherCollection, setOtherCollection] = useState<SubCollection[]>([]);
 
   // Get Auth state from Redux
-  const { currentUser, loading } = useSelector((state: any) => state.user);
+  const { currentUser, loading } = useSelector((state: any | null) => state.user);
 
   useEffect(() => {
     const loadMainCourseCollection = async () => {
@@ -105,12 +106,17 @@ export default function CourseGrid() {
               "Unlock your potential with Bionz's comprehensive crypto trading courses."
             }
             thumbnailimage={
-              mainCourseCollection[0]?.thumbnail_image ||
-              "https://images.pexels.com/photos/35551077/pexels-photo-35551077.jpeg"
+              typeof mainCourseCollection[0]?.thumbnail_image === "string"
+                ? mainCourseCollection[0].thumbnail_image
+                : "https://images.pexels.com/photos/35551077/pexels-photo-35551077.jpeg"
             }
             videoUrl={mainCourseCollection[0]?.video_link || ""}
             pdfUrl={mainCourseCollection[0]?.pdf_link || ""}
-            createDate={mainCourseCollection[0]?.created_date || ""}
+            createDate={
+              typeof mainCourseCollection[0]?.created_date === "string"
+                ? mainCourseCollection[0].created_date
+                : (mainCourseCollection[0]?.created_date as any)?.toDate?.().toISOString() || ""
+            }
           />
         )}
       </section>

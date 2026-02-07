@@ -17,7 +17,7 @@ export default function Signal() {
   );
 
   // Get Auth state from Redux
-  const { currentUser, loading } = useSelector((state: any) => state.user);
+  const { currentUser, loading } = useSelector((state: any | null) => state.user);
   const isProPlan = currentUser?.signalplan === "pro";
 
   const getLocalYYYYMMDD = (d: Date) => {
