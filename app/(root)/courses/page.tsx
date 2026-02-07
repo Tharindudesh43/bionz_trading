@@ -1,12 +1,6 @@
 "use client";
 import { useSelector } from "react-redux";
 import {
-  Download,
-  ShoppingCart,
-  PlayCircle,
-  User,
-  Mail,
-  Lock,
   Loader2,
 } from "lucide-react";
 import MainCourseCollection from "@/components/mainCourseCollection";
@@ -15,7 +9,7 @@ import axios from "axios";
 import CourseDetail from "@/components/subCourseCollection";
 
 
-export default function CourseGrid({ realCourses = [] }) {
+export default function CourseGrid() {
   const [mainCourseCollectionloading, setMainCourseCollectionloading] =
     React.useState(false);
   const [otherCollectionloading, setOtherCollectionloading] =
