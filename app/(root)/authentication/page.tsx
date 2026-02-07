@@ -64,7 +64,7 @@ export default function SignInPage() {
         console.log('Registration successful:', response.data);
         setRegisterError(null);
         setRegisterSuccess('Registration successful! You can now log in.');
-        router.push("/");
+        window.location.href = '/';
       }else if(response.status === 400 && response.data.message === 'Email already in use'){
         setRegisterError('Same email already in use. Please try again.');
       }
