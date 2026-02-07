@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-// import { useSearchParams } from "next/navigation";
+
 
 type CourseItem = {
   collection_id: string;
@@ -11,18 +11,13 @@ type CourseItem = {
 };
 
 export default function Payments() {
-  const [uid, setUid] = useState("");
-const [email, setEmail] = useState("");
-
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  setUid(params.get("uid") ?? "");
-  setEmail(params.get("email") ?? "");
-}, []);
-
   const [selectedOption, setSelectedOption] = useState<
     "pro" | "course" | "book"
   >("pro");
+
+
+  const [uid, setUid] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
@@ -37,10 +32,19 @@ useEffect(() => {
   const [bookShippingAddress, setBookShippingAddress] = React.useState("");
   const [bookname, setBookname] = React.useState("");
 
+  // const uid = searchParams.get("uid");
+  // const email = searchParams.get("email");
+
   const selectedCourse = useMemo(
     () => courses.find((c) => c.collection_id === selectedCourseId),
     [courses, selectedCourseId],
   );
+
+   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setUid(params.get("uid") ?? "");
+    setEmail(params.get("email") ?? "");
+  }, []);
 
   useEffect(() => {
     const fetchCourses = async () => {

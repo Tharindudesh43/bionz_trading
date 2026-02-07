@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
+import Payments from "@/app/(root)/payments/page";
 
 type WinLoss = "win" | "loss";
 
@@ -308,10 +309,15 @@ export default function TradingSignalCard({
 
         {isLocked && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/35 backdrop-blur-[1px]">
-            <div 
-             onClick={() => {
-              router.push("/payments?uid=" + (currentUser?.uid || "") + "&email=" + (currentUser?.email || ""));
-            // window.location.href = "/payments?uid=" + (currentUser?.uid || "") + "&email=" + (currentUser?.email || ""); 
+             <div
+      onClick={() => {
+        const uid = currentUser?.uid ?? "";
+        const email = currentUser?.email ?? "";
+
+        router.push(
+          `/payments?uid=${encodeURIComponent(uid)}&email=${encodeURIComponent(email)}`
+        );
+               // window.location.href = "/payments?uid=" + (currentUser?.uid || "") + "&email=" + (currentUser?.email || ""); 
             }
              }
             className="cursor-pointer rounded-2xl bg-white/90 px-4 py-3 text-center shadow-md ring-1 ring-gray-200">
