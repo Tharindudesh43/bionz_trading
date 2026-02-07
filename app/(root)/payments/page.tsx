@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 
 type CourseItem = {
   collection_id: string;
@@ -10,7 +10,7 @@ type CourseItem = {
   price?: number;
 };
 
-export default function Payments() {
+export default function Payments({ uid, email }: { uid: string; email: string }) {
   const [selectedOption, setSelectedOption] = useState<
     "pro" | "course" | "book"
   >("pro");
@@ -18,7 +18,7 @@ export default function Payments() {
   const [courses, setCourses] = useState<CourseItem[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const [slipFile, setSlipFile] = React.useState<File | null>(null);
   const [slipPreview, setSlipPreview] = React.useState<string>("");
   const [uploading, setUploading] = React.useState(false);
@@ -28,8 +28,8 @@ export default function Payments() {
   const [bookShippingAddress, setBookShippingAddress] = React.useState("");
   const [bookname, setBookname] = React.useState("");
 
-  const uid = searchParams.get("uid");
-  const email = searchParams.get("email");
+  // const uid = searchParams.get("uid");
+  // const email = searchParams.get("email");
 
   const selectedCourse = useMemo(
     () => courses.find((c) => c.collection_id === selectedCourseId),
