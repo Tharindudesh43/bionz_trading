@@ -141,6 +141,7 @@ export default function TradingSignalCard({
       setButtonLoading(false);
     }
   };
+  
 
   // ✅ LOCK: prevent modal open
   const handleCardClick = () => {
@@ -307,17 +308,13 @@ export default function TradingSignalCard({
 
         {isLocked && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/35 backdrop-blur-[1px]">
-            <div
-              onClick={() => {
-                const uid = currentUser?.uid ?? "";
-                const email = currentUser?.email ?? "";
-
-                const url = `/payments?uid=${encodeURIComponent(uid)}&email=${encodeURIComponent(email)}`;
-
-                router.push(url);
-              }}
-              className="cursor-pointer rounded-2xl bg-white/90 px-4 py-3 text-center shadow-md ring-1 ring-gray-200"
-            >
+            <div 
+             onClick={() => {
+              router.push("/payments?uid=" + (currentUser?.uid || "") + "&email=" + (currentUser?.email || ""));
+            // window.location.href = "/payments?uid=" + (currentUser?.uid || "") + "&email=" + (currentUser?.email || ""); 
+            }
+             }
+            className="cursor-pointer rounded-2xl bg-white/90 px-4 py-3 text-center shadow-md ring-1 ring-gray-200">
               <div className="cursor-pointer mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 text-white">
                 <svg
                   width="18"

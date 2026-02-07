@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import { useSearchParams } from "next/dist/client/components/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 // import { useSearchParams } from "next/navigation";
 
@@ -10,7 +11,11 @@ type CourseItem = {
   price?: number;
 };
 
-export default function Payments({ uid, email }: { uid: string; email: string }) {
+export default function Payments() {
+  const searchParams = useSearchParams();
+  const uid = searchParams.get("uid");
+  const email = searchParams.get("email");
+
   const [selectedOption, setSelectedOption] = useState<
     "pro" | "course" | "book"
   >("pro");
@@ -27,9 +32,6 @@ export default function Payments({ uid, email }: { uid: string; email: string })
   const [paymentLoading, setPaymentLoading] = React.useState<any>(null);
   const [bookShippingAddress, setBookShippingAddress] = React.useState("");
   const [bookname, setBookname] = React.useState("");
-
-  // const uid = searchParams.get("uid");
-  // const email = searchParams.get("email");
 
   const selectedCourse = useMemo(
     () => courses.find((c) => c.collection_id === selectedCourseId),
