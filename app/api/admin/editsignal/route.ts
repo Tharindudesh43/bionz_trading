@@ -1,9 +1,25 @@
 import { NextResponse } from "next/server";
 import { adminDB } from "@/firebase/FirebaseAdmin";
+import { Timestamp } from "firebase-admin/firestore";
 
 export async function PATCH(req: Request) {
   try {
     const { data } = await req.json();
+
+    const type = data?.type;
+    const mode = data?.mode;
+    const pair = data?.pair;
+    const leverage = data?.leverage;
+    const entryPrice = data?.entryPrice;
+    const exitPrice = data?.exitPrice;
+    const stopLoss = data?.stopLoss;
+    const signal_id = data?.signal_id;
+    const edited = data?.edited;
+    const createdAt = Timestamp.fromDate(new Date(data?.createdAt));
+    const editedAt = new Date();
+    const win_count = data?.win_count;
+    const loss_count = data?.loss_count;
+    const status = data?.status;
 
     if (!data || !data.signal_id) {
       return NextResponse.json(
@@ -14,13 +30,11 @@ export async function PATCH(req: Request) {
 
     const signalId = data.signal_id;
 
-    console.log("Received data for update:", data);
-
     const querySnapshot = await adminDB
       .collection("signals")
       .where("signal_id", "==", signalId)
       .get();
-      
+
     if (querySnapshot.empty) {
       return NextResponse.json(
         { success: false, message: "Signal not found" },
@@ -28,13 +42,22 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // Get the doc reference
     const docRef = querySnapshot.docs[0].ref;
 
-    // 2️⃣ Update the document
     await docRef.update({
-      ...data,
-      updated_at: new Date().toISOString(),
+      type,
+      mode,
+      pair,
+      leverage,
+      entryPrice,
+      exitPrice,
+      stopLoss,
+      edited,
+      editedAt,
+      createdAt,
+      win_count,
+      loss_count,
+      status,
     });
 
     return NextResponse.json({
@@ -42,28 +65,20 @@ export async function PATCH(req: Request) {
       message: "Signal updated successfully",
       signal_id: signalId,
     });
-
   } catch (error) {
     console.error("API Error:", error);
 
-    // 1. Determine the error message safely
     let errorMessage = "An unknown server error occurred.";
 
-    // 2. Check if the error object is a standard JavaScript Error
     if (error instanceof Error) {
       errorMessage = error.message;
-    }
-    // Optional: Check if it's an object with a 'message' property (e.g., a custom error)
-    else if (
+    } else if (
       typeof error === "object" &&
       error !== null &&
       "message" in error
     ) {
-      // We assert that error is an object with a message property for TypeScript
       errorMessage = (error as { message: string }).message;
     }
-
-    // 3. Return the sanitized message in the response
     return NextResponse.json(
       { success: false, message: errorMessage },
       { status: 500 }

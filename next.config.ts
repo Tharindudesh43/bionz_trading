@@ -34,6 +34,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "coin-images.coingecko.com",
       },
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+        port: "",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com", 
+        port: "",
+        pathname: "**",
+      },
     ],
   },
 };

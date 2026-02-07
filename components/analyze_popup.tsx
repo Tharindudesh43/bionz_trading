@@ -20,7 +20,7 @@ export default function AnalyzePopUP({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-80 shadow-lg animate-fadeIn">
         <h2 className="text-lg font-semibold mb-3 text-black">{title}</h2>
-        <div className="mb-4 text-black">{children}</div>
+        <div className="mb-4  text-black">{children}</div>
 
         <button
           onClick={onClose}

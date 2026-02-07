@@ -1,80 +1,80 @@
-// import { NextResponse } from "next/server";
-// import { adminDB } from "@/firebase/FirebaseAdmin";
-// import { collection, query, orderBy, getDocs } from "firebase/firestore";
-
-// export async function GET() {
-//   try {
-//     const snapshot = await adminDB
-//       .collection("analyze")
-//       .orderBy("created_date", "desc")
-//       .get();
-
-//     const data = snapshot.docs.map(doc => ({
-//       id: doc.id,
-//       ...doc.data(),
-//     }));
-
-//     console.log("Fetched analyze data:", data);
-//     return NextResponse.json({ data });
-//   } catch (err) {
-//     console.error("Error fetching analyze data:", err);
-//     return NextResponse.json({ data: [], error: "Server error" }, { status: 500 });
-//   }
-// }
-
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { adminDB } from "@/firebase/FirebaseAdmin";
-// Import the necessary Timestamp type from the Admin SDK
 import { Timestamp } from "firebase-admin/firestore";
 
 function convertTimestampsToStrings<T>(obj: T): T {
-    // 1. Base Case: If null or not an object, return the value as is.
-    if (obj === null || typeof obj !== 'object') {
-        return obj;
-    }
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
 
-    if (obj instanceof Timestamp) {
-        return obj.toDate().toISOString() as T; 
-    }
+  if (obj instanceof Timestamp) {
+    return obj.toDate().toISOString() as any;
+  }
 
-    if (Array.isArray(obj)) {
-        return obj.map(item => convertTimestampsToStrings(item)) as T;
-    }
-    const newObj = {} as T; 
-    
-    // Type-safely iterate over keys
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            newObj[key as keyof T] = convertTimestampsToStrings(obj[key]);
-        }
-    }
+  if (Array.isArray(obj)) {
+    return obj.map((item) => convertTimestampsToStrings(item)) as any;
+  }
 
-    return newObj;
+  const newObj = {} as any;
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      newObj[key] = convertTimestampsToStrings((obj as any)[key]);
+    }
+  }
+
+  return newObj;
 }
 
-export async function GET() {
-    try {
-        const snapshot = await adminDB
-            .collection("analyze")
-            .orderBy("created_date", "desc")
-            .get();
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limitSize = parseInt(searchParams.get("limit") || "10");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
 
-        const data = snapshot.docs.map(doc => {
-            const rawData = doc.data();
-            
-            // 🛑 CRITICAL STEP: Convert Timestamps before mapping
-            const convertedData = convertTimestampsToStrings(rawData);
+    const offsetValue = (page - 1) * limitSize;
 
-            return {
-                id: doc.id,
-                ...convertedData,
-            };
-        });
+    let query: any = adminDB.collection("analyze");
 
-        console.log("Fetched analyze data:", data);
-        return NextResponse.json({ data });
-    } catch (err) {
-        console.error("Error fetching analyze data:", err);
-        return NextResponse.json({ data: [], error: "Server error" }, { status: 500 });
+    if (startDate && endDate) {
+      const startJS = new Date(`${startDate}T00:00:00.000Z`);
+      const endJS = new Date(`${endDate}T23:59:59.999Z`);
+
+      const startTimestamp = Timestamp.fromDate(startJS);
+      const endTimestamp = Timestamp.fromDate(endJS);
+
+      query = query
+        .where("created_date", ">=", startTimestamp)
+        .where("created_date", "<=", endTimestamp);
     }
+
+    const countSnapshot = await query.count().get();
+    const totalItems = countSnapshot.data().count;
+    const totalPages = Math.ceil(totalItems / limitSize);
+
+    const snapshot = await query
+      .orderBy("created_date", "desc")
+      .limit(limitSize)
+      .offset(offsetValue)
+      .get();
+
+    const data = snapshot.docs.map((doc: any) => ({
+      id: doc.id,
+      ...convertTimestampsToStrings(doc.data()),
+    }));
+
+    return NextResponse.json({
+      data,
+      totalItems,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (err) {
+    console.error("Error fetching analyze data:", err);
+    return NextResponse.json(
+      { data: [], error: "Server error" },
+      { status: 500 }
+    );
+  }
 }

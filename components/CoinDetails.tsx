@@ -11,7 +11,7 @@ export async function CoinPage({ promise }: { promise: Promise<CoinDetails> }) {
   const details = await promise; 
 
   return (
-    <div className="mt-15 relative bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+    <div className="mt-18 relative bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       {/* Back Button */}
       <nav className="fixed p-4 left-1 z-50 ">
         <button

@@ -1,16 +1,13 @@
 'use client';
 
-import { User, onAuthStateChanged } from "firebase/auth";
-import { auth } from '@/firebase/config'
+
 import * as React from 'react';
 import logoSrc from "@/public/logo.png"; 
 import Image from "next/image";
-import Link from 'next/link';
 import {useRouter} from "next/navigation";
 import { useEffect, useState, useRef } from 'react';
 import { BookOpenIcon, InfoIcon, LifeBuoyIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { signOut } from "firebase/auth";
 import {
   NavigationMenu,
   NavigationMenuContent,

@@ -131,6 +131,13 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;     /* Firefox */
 }
+.description {
+  /* Limits the text to 2 lines and adds ellipses */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Or 3 */
+  overflow: hidden;
+}
 
 @layer base {
   * {
@@ -139,4 +146,30 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+/* Add this to your global CSS file (e.g., globals.css) */
+@keyframes ticker-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Translate the width of the duplicated content */
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker-scroll 30s linear infinite; /* Adjust duration for speed */
+}
+
+/* Hide scrollbar for the ticker */
+.custom-scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.custom-scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }

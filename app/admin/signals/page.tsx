@@ -9,17 +9,17 @@ import { SignalModel } from "@/types/signal_models";
 import axios from "axios";
 import { Timestamp } from "firebase-admin/firestore";
 import React, { useState, useCallback, useEffect } from "react";
-import { FiPlus } from "react-icons/fi";
+import { FiFilter, FiPlus, FiRefreshCcw } from "react-icons/fi";
 
-// --- Interface for Modal Props (for type safety) ---
 interface SignalFormModalProps {
   isOpen: boolean;
   setOpen: (open: boolean) => void;
   editingEnabled: boolean;
-  loading: boolean;
+  editingLoading: boolean;
+  addingLoading: boolean;
   // State values
   type: "spot" | "futures";
-  side: "buy" | "sell";
+  mode: "buy" | "sell";
   leverage: number;
   pair: string;
   entryPrice: number;
@@ -27,7 +27,7 @@ interface SignalFormModalProps {
   stopLoss: number;
   // Setters (or functions that use setters)
   setType: (val: "spot" | "futures") => void;
-  setSide: (val: "buy" | "sell") => void;
+  setMode: (val: "buy" | "sell") => void;
   setLeverage: (val: number) => void;
   setPair: (val: string) => void;
   setEntryPrice: (val: number) => void;
@@ -54,7 +54,6 @@ interface StatusDeleteModelProps {
   showSignalFormModal: boolean;
   handleSignalDelete: (signal_id: string) => void;
   loading: boolean;
-  setLoading: (val: boolean) => void;
 }
 
 const StatusEditModel: React.FC<StatusEditModelProps> = ({
@@ -122,7 +121,8 @@ const StatusEditModel: React.FC<StatusEditModelProps> = ({
               disabled={loading}
               className={`cursor-pointer text-amber-300 bg-blue-800`}
             >
-              Change
+              {" "}
+              {loading ? "Changing..." : "Change"}
             </Button>
           </div>
         </div>
@@ -137,7 +137,6 @@ const SignalDeleteModel: React.FC<StatusDeleteModelProps> = ({
   signal_id,
   handleSignalDelete,
   loading,
-  setLoading,
 }) => {
   if (!showSignalFormModal) return null;
 
@@ -159,6 +158,7 @@ const SignalDeleteModel: React.FC<StatusDeleteModelProps> = ({
           {/* Buttons */}
           <div className="flex justify-end gap-3 mt-3">
             <Button
+              disabled={loading}
               variant="outline"
               onClick={() => setShowSignalFormModal(false)}
               className="cursor-pointer text-black border-gray-300"
@@ -167,6 +167,7 @@ const SignalDeleteModel: React.FC<StatusDeleteModelProps> = ({
             </Button>
 
             <Button
+              disabled={loading}
               onClick={() => {
                 handleSignalDelete(signal_id);
               }}
@@ -181,15 +182,16 @@ const SignalDeleteModel: React.FC<StatusDeleteModelProps> = ({
   );
 };
 
-const SignalFormModal: React.FC<SignalFormModalProps> = ({
+const SignalAddAndEditFormModal: React.FC<SignalFormModalProps> = ({
   isOpen,
   setOpen,
   editingEnabled,
-  loading,
+  editingLoading,
+  addingLoading,
   type,
   setType,
-  side,
-  setSide,
+  mode,
+  setMode,
   leverage,
   setLeverage,
   pair,
@@ -267,20 +269,20 @@ const SignalFormModal: React.FC<SignalFormModalProps> = ({
           <label className="font-medium text-gray-700 block mb-1">Mode</label>
           <div className="flex gap-4">
             <Button
-              variant={side === "buy" ? "default" : "outline"}
+              variant={mode === "buy" ? "default" : "outline"}
               className={`text-black cursor-pointer hover:bg-green-600 ${
-                side === "buy" ? "bg-green-500 text-white" : ""
+                mode === "buy" ? "bg-green-500 text-white" : ""
               }`}
-              onClick={() => setSide("buy")}
+              onClick={() => setMode("buy")}
             >
               Buy
             </Button>
             <Button
-              variant={side === "sell" ? "default" : "outline"}
+              variant={mode === "sell" ? "default" : "outline"}
               className={` cursor-pointer text-black hover:bg-red-600 ${
-                side === "sell" ? "bg-red-500 text-white" : ""
+                mode === "sell" ? "bg-red-500 text-white" : ""
               }`}
-              onClick={() => setSide("sell")}
+              onClick={() => setMode("sell")}
             >
               Sell
             </Button>
@@ -296,7 +298,7 @@ const SignalFormModal: React.FC<SignalFormModalProps> = ({
             className="cursor-pointer"
             value={[leverage]}
             max={300}
-            min={1}
+            min={0}
             step={1}
             onValueChange={(val: number[]) => setLeverage(val[0])}
           />
@@ -343,7 +345,7 @@ const SignalFormModal: React.FC<SignalFormModalProps> = ({
         <div className="flex justify-end gap-2">
           <Button
             onClick={handleCancel}
-            disabled={loading}
+            disabled={editingEnabled ? editingLoading : addingLoading}
             className="cursor-pointer"
           >
             Cancel
@@ -351,18 +353,30 @@ const SignalFormModal: React.FC<SignalFormModalProps> = ({
           {editingEnabled ? (
             <Button
               onClick={handleEdit}
-              disabled={loading}
+              disabled={editingEnabled ? editingLoading : addingLoading}
               className="cursor-pointer"
             >
-              {loading ? "Editing..." : "Edit Signal"}
+              {editingEnabled
+                ? editingLoading
+                  ? "Editing..."
+                  : "Edit Signal"
+                : addingLoading
+                ? "Adding..."
+                : "Create Signal"}
             </Button>
           ) : (
             <Button
               onClick={handleAddSignal}
-              disabled={loading}
+              disabled={editingEnabled ? editingLoading : addingLoading}
               className="cursor-pointer"
             >
-              {loading ? "Adding..." : "Create Signal"}
+              {editingEnabled
+                ? editingLoading
+                  ? "Editing..."
+                  : "Edit Signal"
+                : addingLoading
+                ? "Adding..."
+                : "Create Signal"}
             </Button>
           )}
         </div>
@@ -374,15 +388,27 @@ const SignalFormModal: React.FC<SignalFormModalProps> = ({
 export default function AdminSignalPage() {
   const [open, setOpen] = useState(false);
 
-  // --- State Management ---
-  const [signalid, setSignalId] = useState<string>("");
-  const [type, setType] = useState<"spot" | "futures">("spot");
-  const [side, setSide] = useState<"buy" | "sell">("buy");
-  const [leverage, setLeverage] = useState<number>(1);
+  //Signal Add Form States
+  const [SignalAddLoading, setSignalAddLoading] = useState(false);
   const [pair, setPair] = useState("");
+  const [leverage, setLeverage] = useState<number>(0);
+  const [type, setType] = useState<"spot" | "futures">("spot");
+  const [mode, setMode] = useState<"buy" | "sell">("buy");
   const [entryPrice, setEntryPrice] = useState<number>(0);
   const [exitPrice, setExitPrice] = useState<number>(0);
   const [stopLoss, setStopLoss] = useState<number>(0);
+
+  //Signal Delete States
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  //Signal Status Change States
+  const [statusChangeLoading, setStatusChangeLoading] = useState(false);
+
+  //Signal Edit Form States
+  const [editingLoading, setEditingLoading] = useState(false);
+
+  // --- State Management ---
+  const [signalid, setSignalId] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [edited, setEdited] = useState(false); // Unused in modal but kept for context
   const [editedAt, setEditedAt] = useState<string>(""); // Unused in modal but kept for context
@@ -392,10 +418,34 @@ export default function AdminSignalPage() {
   const [status, setStatus] = useState<string>(""); // Unused in modal but kept for context
   const [editingEnabled, setEditingEnabled] = useState(false);
   const [pageloading, setPageLoading] = useState(false);
-  const [activateEnable, setActivateEnable] = useState<boolean>(false); // Unused in modal but kept for context
-  const [showSignalFormModal, setShowSignalFormModal] = useState(false); // Unused in modal but kept for context
+  const [activateEnable, setActivateEnable] = useState<boolean>(false);
+
+  const [showDeleteSignalFormModal, setShowDeleteSignalFormModal] =
+    useState(false); // Unused in modal but kept for context
+
+  // --- Pagination States ---
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const LIMIT = 15;
+
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  // --- Filter States ---
+  const [filterType, setFilterType] = useState("all"); // all, spot, futures
+  const [filterMode, setFilterMode] = useState("all"); // all, buy, sell
+  const [sortOrder, setSortOrder] = useState(""); // desc (newest), asc (oldest)
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [signals, setSignals] = useState<SignalModel[]>([]);
+
+  const resetFilters = () => {
+    setFilterType("all");
+    setFilterMode("all");
+    setSortOrder("");
+    setStartDate("");
+    setEndDate("");
+  };
 
   function openEditModal(signal: SignalModel) {
     setOpen(true);
@@ -405,7 +455,7 @@ export default function AdminSignalPage() {
     setExitPrice(signal.exitPrice);
     setStopLoss(signal.stopLoss);
     setType(signal.type);
-    setSide(signal.side);
+    setMode(signal.mode);
     setPair(signal.pair);
     setLeverage(signal.leverage);
     setCreatedAt(signal.createdAt);
@@ -425,13 +475,12 @@ export default function AdminSignalPage() {
 
   const DeleteSignalCardModel = useCallback(async (signal_id: string) => {
     setSignalId(signal_id);
-    setShowSignalFormModal(true);
+    setShowDeleteSignalFormModal(true);
   }, []);
 
-  // --- Helper Function to Clear Form Data ---
   const ClearFormData = useCallback(() => {
     setType("spot");
-    setSide("buy");
+    setMode("buy");
     setPair("");
     setLeverage(1);
     setEntryPrice(0);
@@ -441,71 +490,136 @@ export default function AdminSignalPage() {
     setEditingEnabled(false);
   }, []);
 
-  const fetchSignals = async () => {
-    setLoading(true);
+  const fetchSignals = async (isInitial = true) => {
+    if (isInitial) {
+      setLoading(true);
+      setPage(1);
+    } else {
+      setLoadingMore(true);
+    }
+
+    const pageToFetch = isInitial ? 1 : page + 1;
+
     try {
+      // 1. Mandatory base parameters
+      const params: any = {
+        page: pageToFetch,
+        limit: LIMIT,
+      };
+
+      // 2. Logic: If Date Range is selected, it takes priority
+      if (startDate && endDate) {
+        params.startDate = startDate;
+        params.endDate = endDate;
+        params.sort = sortOrder;
+
+        console.log("Filtering by Date Range - Secondary filters bypassed");
+      }
+      // 3. Otherwise, use standard filters
+      else {
+        if (filterType !== "all") params.type = filterType;
+        if (filterMode !== "all") params.mode = filterMode;
+        params.sort = sortOrder;
+      }
+
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/signals`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/getSignalsByDate`,
+        {
+          params,
+          // Removed multipart/form-data as GET requests should not have it
+          headers: { "Content-Type": "application/json" },
+        }
       );
-      const data = res.data;
-      setSignals(data.data);
-      console.log("Fetched signals:", data.data);
+
+      const newData = res.data.data || [];
+      const hasMoreItems = newData.length === LIMIT;
+
+      if (isInitial) {
+        setSignals(newData);
+        setPage(1);
+      } else {
+        setSignals((prev) => [...prev, ...newData]);
+        setPage(pageToFetch);
+      }
+
+      setHasMore(hasMoreItems);
     } catch (err) {
-      setLoading(false);
-      console.error(err);
+      console.error("Fetch Error:", err);
+      setHasMore(false);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const fetchNextPage = () => {
+    if (!loadingMore && hasMore) {
+      fetchSignals(false);
     }
   };
 
   useEffect(() => {
-    fetchSignals();
-  }, [pageloading]);
+    fetchSignals(true);
+  }, [filterType, filterMode, sortOrder, startDate, endDate, pageloading]);
 
   // 1. Handle Add Signal
   const handleAddSignal = useCallback(async () => {
-    setLoading(true);
-
-    const Data: SignalModel = {
-      type,
-      side,
-      pair,
-      leverage,
-      entryPrice,
-      exitPrice,
-      stopLoss,
-      signal_id: crypto.randomUUID(),
-      edited: false,
-      editedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      win_count: 0,
-      loss_count: 0,
-      status: "Active",
-    };
-
+    if (
+      pair === "" ||
+      entryPrice === 0 ||
+      exitPrice === 0 ||
+      stopLoss === 0 ||
+      leverage === 0 ||
+      (mode !== "buy" && mode !== "sell") ||
+      (type !== "spot" && type !== "futures")
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
     try {
-      const response = await fetch("/api/admin/addsignal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: Data }),
-      });
+      setSignalAddLoading(true);
+      const Data: SignalModel = {
+        type,
+        mode,
+        pair,
+        leverage,
+        entryPrice,
+        exitPrice,
+        stopLoss,
+        signal_id: crypto.randomUUID(),
+        edited: false,
+        editedAt: "",
+        createdAt: "",
+        win_count: 0,
+        loss_count: 0,
+        status: "Active",
+      };
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/addsignal`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data: Data }),
+        }
+      );
 
       if (response.ok) {
         console.log("Signal added successfully");
       }
 
-      // Success cleanup
-      ClearFormData();
-      setOpen(false);
-      setPageLoading((prev) => !prev);
+      if (response.status === 200) {
+        setSignalAddLoading(false);
+        ClearFormData();
+        setOpen(false);
+        setPageLoading((prev) => !prev);
+      }
     } catch (error) {
+      setSignalAddLoading(false);
       console.error("Error adding signal:", error);
-    } finally {
-      setLoading(false);
     }
   }, [
     type,
-    side,
+    mode,
     pair,
     leverage,
     entryPrice,
@@ -516,8 +630,7 @@ export default function AdminSignalPage() {
   ]);
 
   const ChangeStatus = useCallback(async () => {
-    setLoading(true);
-
+    setStatusChangeLoading(true);
     const Data = {
       signal_id: signalid,
       status: status,
@@ -525,7 +638,7 @@ export default function AdminSignalPage() {
 
     try {
       const response = await axios.patch(
-        "/api/admin/changesignalstatus",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/changesignalstatus`,
         Data,
         {
           headers: {
@@ -535,41 +648,36 @@ export default function AdminSignalPage() {
       );
 
       if (response.data.success) {
+        setStatusChangeLoading(false);
+        setPageLoading((prev) => !prev);
+        setActivateEnable(false);
+        setStatus("");
         console.log("Status updated:", response.data.message);
-      } else {
-        console.error("Error:", response.data.message);
       }
-
-      setStatus("");
-      setPageLoading((prev) => !prev);
-      setActivateEnable(false);
     } catch (error) {
       console.error("Error changing status:", error);
-      setActivateEnable(false);
-      setPageLoading((prev) => !prev);
-    } finally {
-      setLoading(false);
+      setStatusChangeLoading(false);
     }
   }, [signalid, status]);
 
   // 2. Handle Edit Signal
   const handleEdit = useCallback(async () => {
-    setLoading(true);
+    setEditingLoading(true);
     const Data: SignalModel = {
       type,
-      side,
+      mode,
       pair,
       leverage,
       entryPrice,
       exitPrice,
       stopLoss,
-      signal_id: signalid, // Use existing signal ID
+      signal_id: signalid,
       edited: true,
-      editedAt: new Date().toISOString(),
+      editedAt: "",
       createdAt: createdAt,
       win_count: win_count,
       loss_count: loss_count,
-      status: (status as "Active" | "Deactivate" | undefined) || "Active",
+      status: (status as "Active" | "Inactive" | undefined) || "Active",
     };
 
     try {
@@ -580,21 +688,20 @@ export default function AdminSignalPage() {
       });
 
       if (response.status === 200) {
+        setEditingLoading(false);
         console.log("Signal Edited successfully");
       }
 
-      // Success cleanup
       ClearFormData();
       setOpen(false);
       setPageLoading((prev) => !prev);
     } catch (error) {
+      setEditingLoading(false);
       console.error("Error editing signal:", error);
-    } finally {
-      setLoading(false);
     }
   }, [
     type,
-    side,
+    mode,
     pair,
     leverage,
     entryPrice,
@@ -610,8 +717,7 @@ export default function AdminSignalPage() {
   ]);
 
   const handlesignalDelete = useCallback(async (signal_id: string) => {
-    setLoading(true);
-
+    setDeleteLoading(true);
     try {
       const response = await axios.delete(`/api/admin/deletesignal`, {
         headers: {
@@ -621,49 +727,281 @@ export default function AdminSignalPage() {
       });
 
       if (response.data.success) {
+        setDeleteLoading(false);
+        setPageLoading((prev) => !prev);
+        setShowDeleteSignalFormModal(false);
         console.log("Signal deleted:", response.data.message);
-      } else {
-        console.error("Error:", response.data.message);
       }
-
-      setPageLoading((prev) => !prev);
-      setShowSignalFormModal(false);
     } catch (error) {
+      setDeleteLoading(false);
+      setShowDeleteSignalFormModal(false);
       console.error("Error deleting signal:", error);
-      setShowSignalFormModal(false);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
   return (
     <>
-      {/* 1. FIXED ADD SIGNAL BUTTON */}
-      <div className="fixed top-20 right-6 z-10 md:top-8 md:right-8">
+      {/* 1. HEADER */}
+      <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-5xl mx-auto mt-6 px-4 gap-4">
+        <h1 className="text-xl font-black text-white tracking-tighter uppercase flex items-center">
+          Signal Terminal
+        </h1>
         <button
           onClick={() => {
-            ClearFormData(); // Reset form when opening for a new signal
+            ClearFormData();
             setEditingEnabled(false);
             setOpen(true);
           }}
-          className="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg shadow-xl shadow-green-500/50 hover:bg-green-700 transition-all duration-300 transform hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-green-500/50"
+          className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2 text-xs font-black uppercase text-white bg-emerald-600 rounded-lg shadow-lg hover:bg-emerald-500 transition-all"
         >
-          <FiPlus size={20} />
-          Add Signal
+          <FiPlus size={16} /> Add Signal
         </button>
       </div>
 
-      {/* 2. SIGNAL FORM MODAL */}
-      <SignalFormModal
+      {/* 2. ADVANCED FILTER PANEL */}
+      <div className="flex flex-col w-full max-w-5xl mx-auto mt-4 px-4 gap-3">
+        <div className="bg-[#0B1222] border border-white/5 rounded-2xl p-4 shadow-2xl flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Group 1: Type & Mode */}
+            <div className="flex flex-wrap gap-2">
+              <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+                {["ALL", "SPOT", "FUTURES"].map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setFilterType(t.toLowerCase())}
+                    className={`px-3 py-1.5 text-[9px] font-black rounded-lg transition-all ${
+                      filterType === t.toLowerCase()
+                        ? "bg-emerald-500 text-white"
+                        : "text-gray-500 hover:text-gray-300"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+                {["ALL", "BUY", "SELL"].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setFilterMode(m.toLowerCase())}
+                    className={`px-3 py-1.5 text-[9px] font-black rounded-lg transition-all ${
+                      filterMode === m.toLowerCase()
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-500 hover:text-gray-300"
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Group 2: Sorting */}
+            <div className="flex flex-col gap-2">
+              <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">
+                Sort Signals
+              </label>
+
+              <div className="flex bg-black/40 border border-white/10 p-1 rounded-xl w-fit group">
+                {/* Newest Button */}
+                <button
+                  onClick={() => setSortOrder("desc")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${
+                    sortOrder === "desc"
+                      ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 scale-[1.02]"
+                      : "text-gray-500 hover:text-gray-300"
+                  }`}
+                >
+                  <svg
+                    className={`w-3 h-3 transition-transform ${
+                      sortOrder === "desc" ? "rotate-0" : "opacity-50"
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path d="M3 4h13M3 8h9M3 12h5m0 5l3 3 3-3m-3 3V10" />
+                  </svg>
+                  Newest
+                </button>
+
+                {/* Oldest Button */}
+                <button
+                  onClick={() => setSortOrder("asc")}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all duration-300 ${
+                    sortOrder === "asc"
+                      ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 scale-[1.02]"
+                      : "text-gray-500 hover:text-gray-300"
+                  }`}
+                >
+                  <svg
+                    className={`w-3 h-3 transition-transform ${
+                      sortOrder === "asc" ? "rotate-180" : "opacity-50"
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path d="M3 4h13M3 8h9M3 12h5m0 5l3 3 3-3m-3 3V10" />
+                  </svg>
+                  Oldest
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-px bg-white/5 w-full" />
+
+          {/* Group 3: Date Range */}
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Date Inputs Container */}
+            <div className="flex items-center gap-3 flex-1 min-w-[280px]">
+              {/* Start Date */}
+              <div className="flex flex-col flex-1 relative group">
+                <label className="text-[8px] text-gray-500 font-black uppercase mb-1.5 ml-1 tracking-widest">
+                  Start Date
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 text-gray-300 text-[11px] font-bold px-3 py-2.5 rounded-xl outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all cursor-pointer [color-scheme:dark]"
+                  />
+                  {/* Optional: Overlaying a custom icon if you want to make it look more professional */}
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 group-hover:text-emerald-500 transition-colors">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                      <line x1="16" x2="16" y1="2" y2="6" />
+                      <line x1="8" x2="8" y1="2" y2="6" />
+                      <line x1="3" x2="21" y1="10" y2="10" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* End Date */}
+              <div className="flex flex-col flex-1 relative group">
+                <label className="text-[8px] text-gray-500 font-black uppercase mb-1.5 ml-1 tracking-widest">
+                  End Date
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 text-gray-300 text-[11px] font-bold px-3 py-2.5 rounded-xl outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all cursor-pointer [color-scheme:dark]"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 group-hover:text-emerald-500 transition-colors">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                      <line x1="16" x2="16" y1="2" y2="6" />
+                      <line x1="8" x2="8" y1="2" y2="6" />
+                      <line x1="3" x2="21" y1="10" y2="10" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Clear Button */}
+            <button
+              onClick={resetFilters}
+              className="mt-auto flex items-center gap-2 px-5 py-2.5 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 border border-rose-500/20 rounded-xl transition-all uppercase tracking-tighter active:scale-95"
+            >
+              <FiRefreshCcw size={12} className="shrink-0" />
+              <span>Clear Filters</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. SIGNALS LIST */}
+      <div className="flex flex-col items-center w-full mt-2 gap-2 py-4 px-2">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            <div className="w-8 h-8 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4" />
+            <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest">
+              Optimizing Data Stream...
+            </p>
+          </div>
+        ) : signals.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed border-white/5 rounded-3xl w-full max-w-5xl">
+            <FiFilter className="text-gray-800 mb-2" size={30} />
+            <p className="text-[10px] font-bold text-gray-600 uppercase">
+              No signals match your current criteria
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col w-full gap-2">
+              {signals.map((signal, index) => (
+                <SignalCard
+                  key={signal.signal_id || index}
+                  signal={signal}
+                  onEdit={() => openEditModal(signal)}
+                  onActivity={() => StatusModel(signal)}
+                  onDelete={() => DeleteSignalCardModel(signal.signal_id)}
+                />
+              ))}
+            </div>
+
+            {/* 4. LOAD MORE */}
+            {hasMore && (
+              <div className="mt-8 mb-12">
+                <button
+                  onClick={fetchNextPage}
+                  disabled={loadingMore}
+                  className="px-12 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 border border-emerald-500/30 rounded-full hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  {loadingMore ? "Loading..." : "Load More Signals"}
+                </button>
+              </div>
+            )}
+
+            {!hasMore && signals.length > 0 && (
+              <p className="text-[8px] text-gray-700 font-black uppercase tracking-widest mt-6 mb-12">
+                All available records synchronized
+              </p>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* MODALS (Kept exactly as previous) */}
+      <SignalAddAndEditFormModal
         isOpen={open}
         setOpen={setOpen}
         editingEnabled={editingEnabled}
-        loading={loading}
-        // State props
+        addingLoading={SignalAddLoading}
+        editingLoading={editingLoading}
         type={type}
         setType={setType}
-        side={side}
-        setSide={setSide}
+        mode={mode}
+        setMode={setMode}
         leverage={leverage}
         setLeverage={setLeverage}
         pair={pair}
@@ -674,7 +1012,6 @@ export default function AdminSignalPage() {
         setExitPrice={setExitPrice}
         stopLoss={stopLoss}
         setStopLoss={setStopLoss}
-        // Action props
         ClearFormData={ClearFormData}
         handleAddSignal={handleAddSignal}
         handleEdit={handleEdit}
@@ -686,54 +1023,17 @@ export default function AdminSignalPage() {
         status={status}
         activateEnable={activateEnable}
         setStatus={setStatus}
-        loading={loading}
+        loading={statusChangeLoading}
         setOpen={setOpen}
       />
 
       <SignalDeleteModel
-        loading={loading}
-        setLoading={setLoading}
+        loading={deleteLoading}
         handleSignalDelete={() => handlesignalDelete(signalid)}
-        showSignalFormModal={showSignalFormModal}
-        setShowSignalFormModal={setShowSignalFormModal}
+        showSignalFormModal={showDeleteSignalFormModal}
+        setShowSignalFormModal={setShowDeleteSignalFormModal}
         signal_id={signalid}
       />
-
-      {/* Main Content */}
-      <div className="flex flex-col items-center w-full mt-5 gap-4 py-4">
-        {/* Loading State */}
-        {loading && (
-          <div className="flex flex-col items-center justify-center min-h-[300px] text-gray-600 text-lg animate-pulse">
-            Loading signals...
-          </div>
-        )}
-        {/* Empty State */}
-        {!loading && signals.length === 0 && (
-          <div className="flex flex-col items-center justify-center min-h-[300px] text-center text-gray-500 text-lg">
-            No signals available.
-          </div>
-        )}
-        {/* Signals List */}
-        {!loading && signals.length > 0 && (
-          <div className="flex flex-col w-full gap-3">
-            {signals.map((signal: SignalModel, index: number) => (
-              <SignalCard
-                key={signal.signal_id || index}
-                signal={signal}
-                onEdit={() => {
-                  openEditModal(signal);
-                }}
-                onActivity={() => {
-                  StatusModel(signal);
-                }}
-                onDelete={() => {
-                  DeleteSignalCardModel(signal.signal_id);
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
     </>
   );
 }

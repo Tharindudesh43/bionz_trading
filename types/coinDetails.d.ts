@@ -62,11 +62,6 @@ export type CoinDetails = {
         "bitbucket": []
       }
     },
-    // "image": {
-    //   "thumb": string,
-    //   "small": string,
-    //   "large": string
-    // },
     image: string,
     "country_origin": string,
     "genesis_date": string,

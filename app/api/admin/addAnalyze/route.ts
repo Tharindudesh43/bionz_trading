@@ -1,76 +1,72 @@
 import { NextResponse } from "next/server";
-// import { adminDB, adminStorage } from "@/firebase/FirebaseAdmin";
+import { adminDB, adminStorage } from "@/firebase/FirebaseAdmin";
 import { v4 as uuidv4 } from "uuid";
-// import  { AnalyzeModel } from '@/types/analyze_model'
 
 export async function POST(req: Request) {
   try {
-  //  const { data }: { data: AnalyzeModel } = await req.json();
-     
+    const formData = await req.formData();
 
-  //   if (!data.analyze_image || !(data.analyze_image instanceof File)) {
-  //     return NextResponse.json(
-  //       { success: false, message: "Image is required" },
-  //       { status: 400 }
-  //     );
-  //   }
+    const image = formData.get("analyze_image") as File | null;
+    const analyze_description = formData.get("analyze_description") as
+      | string
+      | null;
+    const pair = formData.get("pair") as string | null;
+    const type = formData.get("type") as string | null;
+    const analyze_id = formData.get("analyze_id") as string | null;
 
-  //   // Convert image to buffer
-  //   const bytes = await data.analyze_image.arrayBuffer();
-  //   const buffer = Buffer.from(bytes);
+    if (!image) {
+      return NextResponse.json(
+        { success: false, message: "Image is required" },
+        { status: 400 }
+      );
+    }
 
-  //   // Generate unique file name
-  //   const fileName = `analyze/${uuidv4()}-
-  //   ${data.analyze_image.name}`;
-  //   // Upload to Firebase Storage
-  //   const file = adminStorage.file(fileName);
+    const bytes = await image.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-  //   await file.save(buffer, {
-  //     metadata: {
-  //       contentType: data.analyze_image.type,
-  //       firebaseStorageDownloadTokens: uuidv4(),
-  //     },
-  //   });
+    const fileName = `analyze/${uuidv4()}-${image.name}`;
+    const bucketFile = adminStorage.file(fileName);
 
-  //   // Construct download URL
-  //   const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${process.env.FIREBASE_STORAGE_BUCKET}/o/${encodeURIComponent(
-  //     fileName
-  //   )}?alt=media`;
+    await bucketFile.save(buffer, {
+      metadata: {
+        contentType: image.type,
+      },
+    });
 
-  //   // Save document in Firestore
-  //   const docRef = await adminDB.collection("analyze").add({
-     
-  //   });
+    bucketFile.makePublic();
 
-  //   return NextResponse.json({
-  //     success: true,
-  //     message: "Analyze data added successfully",
-  //     id: docRef.id,
-  //     imageUrl,
-  //   });
+    const bucketName = adminStorage.name;
+    const permanentURL = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+ 
+    const analyze_image_path = fileName;
+    const analyze_image = permanentURL;
+
+    const docRef = await adminDB.collection("analyze").add({
+      analyze_id,
+      analyze_description,
+      pair,
+      type,
+      status: "Active",
+      created_date: new Date(),
+      edited: false,
+      analyze_image: analyze_image,
+      analyze_image_path: analyze_image_path,
+      edited_date: new Date(),
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Analyze added successfully",
+      id: docRef.id,
+      analyze_image: analyze_image,
+    });
   } catch (error) {
-    console.error("API Error:", error);
-
-    // 1. Determine the error message safely
-    let errorMessage = "An unknown server error occurred.";
-
-    // 2. Check if the error object is a standard JavaScript Error
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    // Optional: Check if it's an object with a 'message' property (e.g., a custom error)
-    else if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error
-    ) {
-      // We assert that error is an object with a message property for TypeScript
-      errorMessage = (error as { message: string }).message;
-    }
-
-    // 3. Return the sanitized message in the response
+    console.error("Analyze API Error:", error);
     return NextResponse.json(
-      { success: false, message: errorMessage },
+      {
+        success: false,
+        message: error instanceof Error ? error.message : "Server error",
+      },
       { status: 500 }
     );
   }

@@ -8,6 +8,7 @@ export interface UserModel {
     createdAt: string | Timestamp;
     lastLogin: string | Timestamp;
     courses: string[] | null;
-    plan: string[] | null;
-    signals: boolean;
+    signalplan: string| null;
+    courseplan: string| null;
 }
+

@@ -1,91 +1,68 @@
 import { NextResponse } from "next/server";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/firebase/config";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import admin, { adminDB } from "@/firebase/FirebaseAdmin";
 
 export async function POST(req: Request) {
   try {
-     let body;
+    const { email, password, username } = await req.json();
 
-     try {
-       body = await req.json();
-     } catch {
-       return NextResponse.json(
-         { error: "Invalid JSON body" },
-         { status: 400 }
-       );
-     }
-
-     const { email, password, username } = body;
-
-     console.log("Received sign-up request for email:", email);
-
-     if (!email || !password) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { success: false, message: "Email and password are required" },
         { status: 400 }
       );
     }
-
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-    console.log("User created with UID:", userCredential);
-    const user = userCredential.user;
-
-
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: user.email,
-      role : "user", // default role
-      username: user.displayName || username,
-      createdAt: serverTimestamp(),
-      lastLogin: serverTimestamp(), 
-      plan: "free",
-      courses: [],
-      signals: false,
+    const userRecord = await admin.auth().createUser({
+      email,
+      password,
+      displayName: username,
     });
+
+    const uid = userRecord.uid;
+
+    const userData = {
+      uid: uid,
+      email: email,
+      role: "user",
+      username: username || "New User",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      lastLogin: admin.firestore.FieldValue.serverTimestamp(),
+      courseplan: "free",
+      signalplan: "free",
+      courses: [],
+    };
+
+    await adminDB.collection("users").doc(uid).set(userData);
 
     return NextResponse.json({
       success: true,
       message: "User created successfully",
       user: {
-        uid: user.uid,
-        email: user.email,
+        uid,
+        email,
         role: "user",
-        plan: "free",
-        courses: [],
-        signals: false,
       },
     });
 
-  } catch (error: unknown) {
-  console.log("Error during sign-up:", error);
+  } catch (error: any) {
+    console.error("Sign-up Error:", error);
 
-  // Narrow the error type before accessing properties
-  if (typeof error === "object" && error !== null && "code" in error) {
-    const err = error as { code: string; message?: string };
-
-    if (err.code === "auth/email-already-in-use") {
+    if (error.code === "auth/email-already-exists") {
       return NextResponse.json(
-        { success: false, message: "Email already in use" },
+        { success: false, message: "This email is already registered." },
         { status: 400 }
       );
     }
+
+    if (error.code === "auth/invalid-password") {
+      return NextResponse.json(
+        { success: false, message: "Password must be at least 6 characters." },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: false, message: error.message || "Server error during sign-up" },
+      { status: 500 }
+    );
   }
-
-  // Generic fallback error handling
-  const message =
-    typeof error === "object" &&
-    error !== null &&
-    "message" in error &&
-    typeof (error).message === "string"
-      ? (error).message
-      : "Unknown error";
-
-  return NextResponse.json(
-    { success: false, message },
-    { status: 400 }
-  );
-}
-
 }

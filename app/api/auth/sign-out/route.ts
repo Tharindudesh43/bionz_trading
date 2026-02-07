@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import admin from "firebase-admin";
-
+import admin from "@/firebase/FirebaseAdmin"; 
 export async function POST() {
   try {
-    const cookieStore = cookies();
-    const sessionCookie = (await cookieStore).get("session")?.value;
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("session")?.value;
 
     if (sessionCookie) {
-      // Decode the cookie to get the user ID
-      const decoded = await admin.auth().verifySessionCookie(sessionCookie);
-
-      // Revoke refresh tokens for this user
-      await admin.auth().revokeRefreshTokens(decoded.uid);
+      try {
+        const decoded = await admin.auth().verifySessionCookie(sessionCookie);
+        await admin.auth().revokeRefreshTokens(decoded.uid);
+      } catch (authError) {
+        console.warn("Session already invalid or expired");
+      }
     }
 
-    // Create response and clear cookie
     const response = NextResponse.json({
       success: true,
       message: "Signed out successfully",
@@ -23,44 +22,18 @@ export async function POST() {
 
     response.cookies.set("session", "", {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production", 
       sameSite: "strict",
       path: "/",
-      maxAge: 0, // expire immediately
+      maxAge: 0, 
     });
 
     return response;
-  } catch (error) {
-    // console.error("API Error:", error.toString());
-
-    // 1. Determine the error message safely
-    let errorMessage = "An unknown server error occurred.";
-
-    // 2. Check if the error object is a standard JavaScript Error
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    // Optional: Check if it's an object with a 'message' property (e.g., a custom error)
-    else if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error
-    ) {
-      // We assert that error is an object with a message property for TypeScript
-      errorMessage = (error as { message: string }).message;
-    }
-
-    // 3. Return the sanitized message in the response
+  } catch (error: any) {
+    console.error("Sign-out Error:", error);
     return NextResponse.json(
-      { success: false, message: errorMessage },
+      { success: false, message: error.message || "Internal Server Error" },
       { status: 500 }
     );
   }
-  
-  // catch (err: any) {
-  //   return NextResponse.json(
-  //     { success: false, message: err.message },
-  //     { status: 500 }
-  //   );
-  // }
 }

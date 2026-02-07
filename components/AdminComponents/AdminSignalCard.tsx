@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import AnalyzePopUP from "../analyze_popup";
-import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import type { SignalModel } from "@/types/signal_models";
 import downimage from "@/src/down.png";
 import upimage from "@/src/up.png";
-import { Pencil, EyeClosed } from "lucide-react";
+import { Pencil, Trash2, Clock, CheckCircle2, XCircle, Power } from "lucide-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Timestamp } from "firebase/firestore";
-import { AiFillDelete, AiFillEye } from "react-icons/ai";
+
 dayjs.extend(relativeTime);
 
 const SignalCard: React.FC<{
@@ -20,281 +18,135 @@ const SignalCard: React.FC<{
   onActivity: () => void;
   onDelete: () => void;
 }> = ({ signal, onEdit, onActivity, onDelete }) => {
-  const displaySignal = { ...signal };
-  const [isOpenLossOrProfit, setisOpenLossOrProfit] = React.useState(false);
-  const toggleOpenLossOrProfit = () =>
-    setisOpenLossOrProfit(!isOpenLossOrProfit);
+  const [timeAgo, setTimeAgo] = useState<string>("");
 
-  function getTradePerformance(win: number, loss: number) {
-    // No data
-    if (win === 0 && loss === 0) {
-      return "0.00%";
-    }
+  const parseDate = (dateField: any) => {
+    if (!dateField) return null;
+    if (typeof dateField === "string") return new Date(dateField);
+    if (dateField instanceof Timestamp) return dateField.toDate();
+    if (dateField.seconds) return new Date(dateField.seconds * 1000);
+    return new Date(dateField);
+  };
 
-    const diff = Math.abs(win - loss);
-    const total = win + loss; // safe base (never zero unless both zero)
+  const createdDate = useMemo(() => parseDate(signal.createdAt), [signal.createdAt]);
+  const editedDate = useMemo(() => parseDate(signal.editedAt), [signal.editedAt]);
 
-    const percentage = ((diff / total) * 100).toFixed(2);
-
-    return win >= loss ? `+${percentage}%` : `-${percentage}%`;
-  }
-
-  const numericPercentage = getTradePerformance(
-    signal.win_count ?? 0,
-    signal.loss_count ?? 0
-  );
-  const profitDisplay = `${numericPercentage}`;
-
-  const profitPercentage = getTradePerformance(
-    signal.win_count ?? 0,
-    signal.loss_count ?? 0
-  );
-  const isPositive = profitPercentage.startsWith("+");
-  const isNegative = profitPercentage.startsWith("-");
+  useEffect(() => {
+    if (createdDate) setTimeAgo(dayjs(createdDate).fromNow());
+  }, [createdDate]);
 
   const wins = signal.win_count ?? 0;
   const losses = signal.loss_count ?? 0;
   const total = wins + losses;
-
-  let profitPercent = 0;
-  let lossPercent = 0;
-
-  if (total > 0) {
-    profitPercent = (wins / total) * 100;
-    lossPercent = (losses / total) * 100;
-  }
-  const gaugeData = [
-    { name: "Profit", value: profitPercent, fill: "#4ade80" }, // green
-    { name: "Loss", value: lossPercent, fill: "#f87171" }, // red
-  ];
-
-  const backgroundStyle = {
-    background:
-      displaySignal.side.toString() === "buy"
-        ? "linear-gradient(90deg, #e6ffe6, #ccffcc)"
-        : "linear-gradient(90deg, #ffe6e6, #ffcccc)",
-  };
-
-  const [timeAgo, setTimeAgo] = React.useState<string>("");
-
-  const createdDate = React.useMemo(() => {
-    if (typeof displaySignal.createdAt === "string") {
-      return new Date(displaySignal.createdAt);
-    }
-    // if it's a Timestamp-like object from Firebase
-    if (
-      displaySignal.createdAt &&
-      typeof displaySignal.createdAt === "object" &&
-      "seconds" in displaySignal.createdAt
-    ) {
-      const seconds = (displaySignal.createdAt as Timestamp).seconds || 0;
-      const nanoseconds =
-        (displaySignal.createdAt as Timestamp).nanoseconds || 0;
-      return new Date(seconds * 1000 + nanoseconds / 1000000);
-    }
-    // Fallback: attempt to coerce to Date
-    return new Date(String(displaySignal.createdAt));
-  }, [displaySignal.createdAt]);
-
-  function formatDateTime(date: Date | null) {
-    if (!date) return "Not edited";
-    return date.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-
-  useEffect(() => {
-    setTimeAgo(dayjs(createdDate).fromNow());
-  }, [createdDate]);
+  const winPercent = total > 0 ? (wins / total) * 100 : 50;
 
   return (
-    <>
-      <div
-        className={`
-    w-full max-w-xl mx-auto
-    p-4 mt-3
-    bg-white rounded-xl shadow-md
-    flex flex-col md:flex-row md:items-center md:justify-between
-    gap-4 md:gap-3
-    relative
-    transition-all duration-200 hover:shadow-lg
-    ${displaySignal.status === "Active" ? "" : "border-l-8 border-gray-500"}
-  `}
-        style={backgroundStyle}
-      >
-        {/* Edit Buttons */}
-        <div className="absolute bottom-2 left-2 flex gap-2 md:gap-3">
-          <button
-            className="cursor-pointer bg-blue-500 hover:bg-blue-600 
-      text-white p-1.5 rounded-md shadow-md flex items-center gap-1 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-          >
-            <Pencil size={16} />
-          </button>
+    <div className="relative w-full max-w-4xl mx-auto mb-2 px-2 sm:px-0">
+      {/* Side Status Indicator - Made slightly thinner */}
+      <div className={`absolute left-2 sm:left-0 top-0 bottom-0 w-[3px] rounded-l-lg z-10 ${
+        signal.status === "Active" ? "bg-emerald-500" : "bg-gray-600"
+      }`} />
 
-          <button
-            className="cursor-pointer bg-pink-500 hover:bg-pink-600 
-      text-white p-1.5 rounded-md shadow-md flex items-center gap-1 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              onActivity();
-            }}
-          >
-            <AiFillEye size={16} />
-          </button>
-
-
-            <button
-            className="cursor-pointer bg-amber-800 hover:bg-yellow-600 
-      text-white p-1.5 rounded-md shadow-md flex items-center gap-1 text-xs"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-          >
-            <AiFillDelete size={16} />
-          </button>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center bg-[#0B1222] border border-white/5 rounded-lg overflow-hidden shadow-md transition-all hover:border-white/20">
+        
+        {/* SECTION 1: MODE & ICON - Compact padding */}
+        <div className={`flex flex-row sm:flex-col items-center justify-center p-2 gap-2 sm:gap-0 sm:min-w-[65px] ${
+          signal.mode === "buy" ? "bg-emerald-500/5" : "bg-rose-500/5"
+        }`}>
+          <div className="relative w-6 h-6">
+            <Image src={signal.mode === "buy" ? upimage : downimage} alt="mode" fill className="object-contain" />
+          </div>
+          <span className={`text-[9px] font-black uppercase tracking-tight ${signal.mode === "buy" ? "text-emerald-500" : "text-rose-500"}`}>
+            {signal.mode}
+          </span>
         </div>
 
-        {/* Small Top Date */}
-        <div className="absolute top-2 left-2 text-[10px] md:text-xs text-gray-600 font-medium">
-          {formatDateTime(new Date(displaySignal.editedAt?.toString() || ""))}
-        </div>
+        {/* SECTION 2: PAIR, LEVERAGE & STATUS - Tightened spacing */}
+        <div className="flex-1 px-3 py-1.5 flex flex-col justify-center min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <h2 className="text-sm font-bold text-white tracking-tight truncate">{signal.pair}</h2>
+            <span className="text-[8px] font-bold text-emerald-400 bg-emerald-400/10 px-1 py-0.5 rounded">
+              {signal.leverage}x
+            </span>
+            <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold border ${
+              signal.status === "Active" 
+              ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
+              : "bg-gray-500/10 text-gray-500 border-gray-500/20"
+            }`}>
+              {signal.status === "Active" ? <CheckCircle2 size={8} /> : <XCircle size={8} />}
+              {signal.status?.toUpperCase()}
+            </div>
+          </div>
 
-        {/* Left Block */}
-        <div className="flex flex-col items-center w-full md:w-24 mt-5 md:mt-0">
-          <div className="relative w-12 h-12 md:w-14 md:h-14 mb-1">
-            {displaySignal.side.toString() === "buy" ? (
-              <Image src={upimage} alt="" fill className="object-contain" />
-            ) : (
-              <Image src={downimage} alt="" fill className="object-contain" />
+          {/* SECTION 3: DATE LOGIC - Smaller text */}
+          <div className="flex flex-col mt-0.5">
+            <div className="flex items-center gap-1.5 text-[9px] text-gray-500 font-medium">
+              <Clock size={8} />
+              <span>{timeAgo}</span>
+              <span className="text-gray-700 font-bold">• {dayjs(createdDate).format("MMM DD")}</span>
+            </div>
+            
+            {signal.edited && editedDate && (
+              <div className="text-[8px] text-amber-500/80 font-bold flex items-center gap-1">
+                <span>(Edited {dayjs(editedDate).format("MMM DD, HH:mm")})</span>
+              </div>
             )}
           </div>
-
-          <div
-            className={`text-base md:text-lg font-bold  
-      ${displaySignal.side === "buy" ? "text-green-600" : "text-red-600"}`}
-          >
-            {displaySignal.side.toUpperCase()}
-          </div>
-
-          <p className="text-[10px] text-gray-500 mt-1">
-            {dayjs(createdDate).fromNow()}
-          </p>
         </div>
 
-        {/* Middle Info */}
-        <div className="flex-1 w-full px-3 py-2 border-y md:border-y-0 md:border-x border-gray-200">
-          <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
-            <span className="text-orange-600 font-semibold text-xs">
-              {displaySignal.type === "spot" ? "SPOT" : "FUTURES"}
-            </span>
-
-            <h2 className="text-lg font-bold text-gray-800">
-              {displaySignal.pair}
-            </h2>
-
-            <span
-              className={`font-semibold text-sm
-        ${
-          displaySignal.status === "Active" ? "text-green-600" : "text-red-600"
-        }`}
-            >
-              {displaySignal.status}
-            </span>
+        {/* SECTION 4: WIN/LOSS BAR - Lower height bar */}
+        <div className="px-3 py-1.5 sm:border-x border-white/5 min-w-[120px] bg-white/[0.01]">
+          <div className="flex justify-between items-end mb-0.5 text-[8px]">
+            <span className="font-bold text-emerald-500 uppercase">Win {wins}</span>
+            <span className="font-bold text-rose-500 uppercase">Loss {losses}</span>
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs md:text-sm font-medium text-gray-700">
-            <div>
-              Leverage:{" "}
-              <span className="font-bold">{displaySignal.leverage}X</span>
-            </div>
-            <div>
-              Entry:{" "}
-              <span className="font-bold">{displaySignal.entryPrice}</span>
-            </div>
-            <div>
-              Exit: <span className="font-bold">{displaySignal.exitPrice}</span>
-            </div>
-            <div>
-              Stop Loss:{" "}
-              <span className="font-bold">{displaySignal.stopLoss}</span>
-            </div>
+          <div className="h-1 w-full bg-gray-800 rounded-full overflow-hidden flex">
+            <div style={{ width: `${winPercent}%` }} className="h-full bg-emerald-500" />
+            <div style={{ width: `${100 - winPercent}%` }} className="h-full bg-rose-500" />
+          </div>
+          <div className="mt-0.5 flex justify-between items-center text-[8px]">
+            <span className="font-bold text-blue-400/80">{signal.type.toUpperCase()}</span>
+            <span className="font-black text-gray-500">{winPercent.toFixed(0)}%</span>
           </div>
         </div>
 
-        {/* Right Block */}
-        <div className="flex flex-col items-center w-full md:w-24 mt-2 md:mt-0">
-          <div
-            className={`absolute top-2 right-2 text-[10px] md:text-xs px-2 py-1 rounded shadow 
-      ${
-        displaySignal.edited
-          ? "bg-yellow-200 text-yellow-800"
-          : "bg-green-300 text-green-800"
-      }`}
+        {/* SECTION 5: PRICES - Compact columns */}
+        <div className="grid grid-cols-3 gap-2 px-4 py-1.5 sm:min-w-[170px]">
+          <div className="flex flex-col">
+            <span className="text-[7px] text-gray-600 uppercase font-black">Entry</span>
+            <span className="text-[10px] font-bold text-gray-200">{signal.entryPrice}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[7px] text-gray-600 uppercase font-black">Stop</span>
+            <span className="text-[10px] font-bold text-rose-500">{signal.stopLoss}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[7px] text-gray-600 uppercase font-black">Exit</span>
+            <span className="text-[10px] font-bold text-emerald-400">{signal.exitPrice}</span>
+          </div>
+        </div>
+
+        {/* SECTION 6: ACTIONS - Shrunk icon buttons */}
+        <div className="flex flex-row sm:flex-col items-center justify-center p-1 gap-0.5 bg-black/20">
+          <button 
+            onClick={onActivity} 
+            className={`p-1.5 rounded-md cursor-pointer transition-all ${
+              signal.status === "Active" 
+              ? "text-emerald-500 hover:bg-emerald-500/10" 
+              : "text-gray-500 hover:bg-gray-500/10"
+            }`}
           >
-            {displaySignal.edited
-              ? `Edited | ${formatDateTime(
-                  new Date(displaySignal.editedAt?.toString() || "")
-                )}`
-              : "Not Edited"}
-          </div>
-
-          {/* Gauge */}
-          <div className="w-24 h-14 md:w-28 md:h-16">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadialBarChart
-                cx="50%"
-                cy="100%"
-                innerRadius="45%"
-                outerRadius="85%"
-                startAngle={180}
-                endAngle={0}
-                barSize={10}
-                data={gaugeData}
-              >
-                <RadialBar dataKey="value" cornerRadius={5} background />
-              </RadialBarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="text-gray-700 font-semibold text-xs mt-1 uppercase">
-            Profit / Loss
-          </div>
-
-          <div
-            className={`text-xl font-extrabold mt-1 
-      ${isPositive ? "text-green-600" : "text-red-600"}`}
-          >
-            {profitDisplay}
-          </div>
-
-          {/* Win / Loss badges */}
-          <div className="flex space-x-3 mt-2 text-white font-bold text-xs">
-            <div className="flex flex-col items-center">
-              <span className="text-green-600 font-bold">
-                {displaySignal.win_count}
-              </span>
-              <div className="px-2 py-0.5 bg-green-600 rounded">Win</div>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <span className="text-red-600 font-bold">
-                {displaySignal.loss_count}
-              </span>
-              <div className="px-2 py-0.5 bg-red-600 rounded">Loss</div>
-            </div>
-          </div>
+            <Power size={12} />
+          </button>
+          <button onClick={onEdit} className="p-1.5 cursor-pointer rounded-md text-gray-500 hover:text-blue-600 hover:bg-blue-500/35">
+            <Pencil size={12} />
+          </button>
+          <button onClick={onDelete} className="p-1.5 cursor-pointer hover:bg-rose-500/10 rounded-md text-gray-500 hover:text-rose-500">
+            <Trash2 size={12} />
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

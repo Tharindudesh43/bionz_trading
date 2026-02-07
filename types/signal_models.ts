@@ -3,7 +3,7 @@ import { Timestamp } from "firebase-admin/firestore";
 export interface SignalModel {
   signal_id: string;
   type: "spot" | "futures";
-  side: "buy" | "sell";
+  mode: "buy" | "sell" ;
   pair: string;
   leverage: number;
   entryPrice: number;
@@ -14,5 +14,5 @@ export interface SignalModel {
   editedAt?: string | Timestamp;
   win_count?: number | 0;
   loss_count?: number | 0;
-  status?: "Active" | "Deactivate" ;
+  status?: "Active" | "Inactive" ;
 }

@@ -3,13 +3,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
-import Footer from "@/components/footer";
 import { Provider } from "react-redux";
 import { store } from "../src/store/store";
+import { SnackbarProvider } from "notistack";
 
 import AuthWatcher from "@/app/AuthWatcher";
-import MainNavaBar from "@/components/MainNavBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,28 +27,27 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Changa:wght@200..800&family=Permanent+Marker&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Varela+Round&display=swap" rel="stylesheet"/>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Anton&family=Changa:wght@200..800&family=Permanent+Marker&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Varela+Round&display=swap"
+          rel="stylesheet"
+        />
       </head>
-      
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <Provider store={store}>
-          <AuthWatcher />
-
-          {/* BACKGROUND LAYER */}
-          <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none min-h-fit"></div>
-
-          {/* MAIN CONTENT */}
-          <div className="relative z-10">
-            <MainNavaBar />
-
-            {/* IMPORTANT: Add padding-top so content does NOT hide under navbar */}
-            <div className="">
-              {children}
+          <SnackbarProvider
+            maxSnack={3}
+            autoHideDuration={3000}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          >
+            <AuthWatcher />
+            <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none min-h-fit"></div>
+            <div className="relative z-10">
+              <div className="">{children}</div>
             </div>
-
-            <WhatsAppFloat />
-            <Footer />
-          </div>
+          </SnackbarProvider>
         </Provider>
       </body>
     </html>

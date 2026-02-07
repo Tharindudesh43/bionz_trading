@@ -6,6 +6,23 @@ export async function POST(req: Request) {
   try {
     const { data }: { data: SignalModel } = await req.json();
 
+    const type = data.type;
+    const mode = data.mode;
+    const pair = data.pair;
+    const leverage = data.leverage;
+    const entryPrice = data.entryPrice;
+    const exitPrice = data.exitPrice;
+    const stopLoss = data.stopLoss;
+    const signal_id = data.signal_id;
+    const edited = data.edited;
+    const createdAt = new Date();
+    const editedAt = new Date();
+    const win_count = data.win_count;
+    const loss_count = data.loss_count;
+    const status = data.status;
+
+
+
     if (!data) {
       return NextResponse.json(
         { success: false, message: "No signal data provided" },
@@ -13,19 +30,30 @@ export async function POST(req: Request) {
       );
     }
     const docRef = await adminDB.collection("signals").add({
-      ...data,
+      type,
+      mode,
+      pair,
+      leverage,
+      entryPrice,
+      exitPrice,
+      stopLoss,
+      signal_id,
+      edited,
+      createdAt,
+      editedAt,
+      win_count,
+      loss_count,
+      status,
     });
 
     return NextResponse.json({
       success: true,
       message: "Signal created successfully",
       id: docRef.id,
-      signal: data,
     });
   } catch (error) {
     // console.error("API Error:", error.toString());
 
-    // 1. Determine the error message safely
     let errorMessage = "An unknown server error occurred.";
 
     // 2. Check if the error object is a standard JavaScript Error

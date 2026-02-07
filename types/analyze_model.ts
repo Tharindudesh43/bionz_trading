@@ -6,9 +6,9 @@ export interface AnalyzeModel {
   created_date: string | Timestamp;
   analyze_description: string;
   pair: string;
-  type?: "spot" | "futures";
-  status: "active" | "inactive";
-  edited_date?: string | Timestamp;
+  type: "spot" | "futures";
+  status: "Active" | "Inactive";
+  edited_date: string | Timestamp;
   edited?: boolean;
 }
 

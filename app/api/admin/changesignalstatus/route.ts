@@ -5,8 +5,6 @@ export async function PATCH(req: Request) {
   try {
     const { signal_id, status } = await req.json();
 
-    console.log("Received data:", { signal_id, status });   
-
     if (!signal_id) {
       return NextResponse.json(
         { success: false, message: "signal_id is required" },
