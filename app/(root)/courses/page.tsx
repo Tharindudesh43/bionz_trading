@@ -7,7 +7,7 @@ import MainCourseCollection from "@/components/mainCourseCollection";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CourseDetail from "@/components/subCourseCollection";
-import { MainCollection, SubCollection, subContentType } from "@/types/collection_models";
+import { MainCollection, SubCollection } from "@/types/collection_models";
 
 
 export default function CourseGrid() {
@@ -19,7 +19,7 @@ export default function CourseGrid() {
   const [otherCollection, setOtherCollection] = useState<SubCollection[]>([]);
 
   // Get Auth state from Redux
-  const { currentUser, loading } = useSelector((state: any | null) => state.user);
+  const { currentUser, loading } = useSelector((state: any | null | undefined) => state.user);
 
   useEffect(() => {
     const loadMainCourseCollection = async () => {
