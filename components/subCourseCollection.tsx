@@ -86,7 +86,7 @@ export default function CourseDetail({
             <p className="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-widest">Download Full Syllabus</p>
             <button
               onClick={() => courseData.main_pdf_link && window.open(courseData.main_pdf_link, "_blank")}
-              className="flex items-center gap-3 bg-red-700 hover:bg-red-800 text-white px-6 md:px-8 py-3 rounded-full font-bold text-xs md:text-sm shadow-lg transition-all active:scale-95"
+              className="flex cursor-pointer items-center gap-3 bg-red-700 hover:bg-red-800 text-white px-6 md:px-8 py-3 rounded-full font-bold text-xs md:text-sm shadow-lg transition-all active:scale-95"
             >
               Course Curriculum <Download size={16} />
             </button>

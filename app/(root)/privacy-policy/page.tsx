@@ -2,7 +2,7 @@
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="w-full text-blue-950 py-12 px-6 bg-white dark:bg-gray-800">
+    <div className="w-full text-blue-950 py-22 px-6 bg-white dark:bg-gray-800">
       <h4 className="text-5xl font-bold mb-6 text-gray-900 dark:text-white">
         Privacy Policy
       </h4>
@@ -51,10 +51,10 @@ export default function PrivacyPolicyPage() {
         imply that you consent to our collecting and using it for that specific
         reason only. You can withdraw consent at any time by contacting us at{" "}
         <a
-          href="mailto:admin@cryptosignals.org"
+          href="mailto:zevongraphic@gmail.com"
           className="text-blue-600 hover:underline"
         >
-          admin@cryptosignals.org
+          zevongraphic@gmail.com
         </a>
         .
       </p>
@@ -135,10 +135,10 @@ export default function PrivacyPolicyPage() {
         For inquiries about your personal information, please contact our
         Privacy Compliance Officer at{" "}
         <a
-          href="mailto:admin@cryptosignals.org"
+          href="mailto:zevongraphic@gmail.com"
           className="text-blue-600 hover:underline"
         >
-          admin@cryptosignals.org
+          zevongraphic@gmail.com
         </a>
         .
       </p>

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const expiresIn = 60 * 60 * 24 * 7 * 1000; 
     const sessionCookie = await admin.auth().createSessionCookie(data.idToken, { expiresIn });
 
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true , message: "Logged in successfully!"});
 
     response.cookies.set("session", sessionCookie, {
       httpOnly: true,

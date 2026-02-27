@@ -80,7 +80,7 @@ export default function CourseGrid() {
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
       <section className="w-full">
         {mainCourseCollectionloading ? (
-          <div className="max-w-6xl mx-auto px-4 md:px-6 pt-10 md:pt-16 pb-16 animate-pulse">
+          <div className="max-w-6xl mx-auto px-4 md:px-6 pt-30 md:pt-30 pb-16 animate-pulse">
             <div className="flex flex-col items-center text-center mb-12">
               <div className="h-10 bg-gray-200 rounded-md w-3/4 md:w-1/2 mb-4" />
               <div className="h-4 bg-gray-100 rounded-md w-full md:w-2/3 mb-2" />
@@ -122,11 +122,11 @@ export default function CourseGrid() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-10 border-l-4 border-blue-600 pl-4">
-          <h2 className="text-2xl font-black uppercase tracking-tighter text-gray-900">
+        <div className="mb-10 border-l-10 border-blue-600 pl-4">
+          <h2 className="text-3xl font-black uppercase tracking-tighter text-gray-900">
             Advanced Modules
           </h2>
-          <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">
+          <p className="text-gray-500 text-sm font-bold uppercase tracking-widest">
             Continue your learning journey
           </p>
         </div>
@@ -161,7 +161,7 @@ export default function CourseGrid() {
                 return (
                   <div
                     key={course.id}
-                    className="relative border-b border-gray-100 pb-5 last:border-0"
+                    className="relative border-b-3 border-black pb-5 last:border-0"
                   >
                     <CourseDetail
                       courseData={course}

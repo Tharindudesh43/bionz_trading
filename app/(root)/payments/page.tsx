@@ -172,8 +172,7 @@ export default function Payments() {
         <div className="max-w-md w-full rounded-2xl border border-gray-200 bg-gray-50 p-6 text-center">
           <p className="text-lg font-semibold text-gray-900">Access Denied</p>
           <p className="mt-2 text-sm text-gray-600">
-            Payment page link is invalid. Please open the correct link from the
-            app.
+            Payment page link is invalid or Please log in to access this page.
           </p>
         </div>
       </div>

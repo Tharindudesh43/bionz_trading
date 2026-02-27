@@ -144,7 +144,7 @@ export const NavBar = () => {
                 href="/authentication"
                 className="text-sm font-bold text-white bg-blue-600 px-6 py-2.5 rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/20"
               >
-                Sign in
+                SIGN IN
               </Link>
             )}
           </div>
@@ -223,7 +223,7 @@ export const NavBar = () => {
                   href="/authentication"
                   className="block w-full py-3 text-center text-white bg-blue-600 rounded-xl font-bold"
                 >
-                  Sign in
+                  SIGN IN
                 </Link>
               ))
             )}

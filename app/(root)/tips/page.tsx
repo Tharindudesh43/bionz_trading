@@ -51,8 +51,13 @@ return (
   <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-10">
     <div className="mx-auto mt-15 max-w-6xl">
       {/* Content Card */}
-      <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-gray-200 sm:p-6">
-        {items.length === 0 && !loading ? (
+      <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-200 sm:p-6">
+        {loading ? (
+          <div className="py-16 text-center">
+            <p className="text-sm font-semibold text-gray-700">Loading videos...</p>
+          </div>
+        ) :
+        items.length === 0 && !loading ? (
           <div className="py-16 text-center">
             <p className="text-sm font-semibold text-gray-700">No videos found</p>
             <p className="mt-1 text-xs text-gray-500">
